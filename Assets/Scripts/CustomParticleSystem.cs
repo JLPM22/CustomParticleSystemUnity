@@ -67,7 +67,7 @@ namespace CustomParticleSystem
                     {
                         if (Obstacles[j].HasCollisionParticle(Particles[i]))
                         {
-                            Obstacles[j].CorrectCollisionParticle(Particles[i]);
+                            Obstacles[j].CorrectCollisionParticle(Particles[i], deltaTimeStep);
                         }
                     }
                 }

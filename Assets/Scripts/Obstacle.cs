@@ -7,6 +7,6 @@ namespace CustomParticleSystem
     public abstract class Obstacle : MonoBehaviour
     {
         public abstract bool HasCollisionParticle(Particle p);
-        public abstract void CorrectCollisionParticle(Particle p);
+        public abstract void CorrectCollisionParticle(Particle p, float deltaTime);
     }
 }

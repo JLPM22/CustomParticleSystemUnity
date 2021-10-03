@@ -8,13 +8,14 @@ namespace CustomParticleSystem
     {
         [Range(0.0f, 1.0f)] public float Friction = 0.0f;
 
-        private Vector3 Normal;
-        private float D; // ax + by + cz + D = 0
-
-        private void Awake()
+        private Vector3 Normal
         {
-            Normal = transform.up;
-            D = -Vector3.Dot(Normal, transform.position);
+            get { return transform.up; }
+        }
+        // ax + by + cz + D = 0
+        private float D
+        {
+            get { return -Vector3.Dot(Normal, transform.position); }
         }
 
         public override bool HasCollisionParticle(Particle p)
@@ -24,7 +25,7 @@ namespace CustomParticleSystem
             return sign <= 0;
         }
 
-        public override void CorrectCollisionParticle(Particle p)
+        public override void CorrectCollisionParticle(Particle p, float deltaTime)
         {
             p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, Normal) + D) * Normal;
 
