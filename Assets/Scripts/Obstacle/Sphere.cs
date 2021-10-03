@@ -42,21 +42,7 @@ namespace CustomParticleSystem
             // Define tangent plane on P
             Vector3 N = Vector3.Normalize(P - Center);
             // Apply collision plane-particle
-            CollisionPlaneParticle(p, N, P);
-        }
-
-        private void CollisionPlaneParticle(Particle p, Vector3 N, Vector3 P)
-        {
-            float D = -Vector3.Dot(N, P);
-
-            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + D) * N;
-
-            // Friction
-            Vector3 velocityNormal = Vector3.Dot(p.Velocity, N) * N;
-            Vector3 velocityTangent = p.Velocity - velocityNormal;
-
-            // Elastic collision
-            p.Velocity = p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, N) * N;
+            Plane.CollisionPlaneParticle(p, N, -Vector3.Dot(N, P), Friction);
         }
     }
 }

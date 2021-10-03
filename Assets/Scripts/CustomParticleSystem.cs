@@ -16,13 +16,11 @@ namespace CustomParticleSystem
         private List<GameObject> ParticlesVisual = new List<GameObject>(); // TEMPORAL (waiting for GPU Instancing)
         private Obstacle[] Obstacles;
 
-        private void Awake()
-        {
-            Obstacles = FindObjectsOfType<Obstacle>();
-        }
-
         private void Start()
         {
+            // Find obstacles
+            Obstacles = FindObjectsOfType<Obstacle>();
+            // Spawn first particle
             SpawnParticle(transform.position, Vector3.zero);
         }
 

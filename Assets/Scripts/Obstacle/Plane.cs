@@ -6,8 +6,6 @@ namespace CustomParticleSystem
 {
     public class Plane : Obstacle
     {
-        [Range(0.0f, 1.0f)] public float Friction = 0.0f;
-
         private Vector3 Normal
         {
             get { return transform.up; }
@@ -27,17 +25,22 @@ namespace CustomParticleSystem
 
         public override void CorrectCollisionParticle(Particle p, float deltaTime)
         {
-            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, Normal) + D) * Normal;
+            CollisionPlaneParticle(p, Normal, D, Friction);
+        }
+
+        public static void CollisionPlaneParticle(Particle p, Vector3 N, float D, float friction)
+        {
+            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + D) * N;
 
             // Friction
-            Vector3 velocityNormal = Vector3.Dot(p.Velocity, Normal) * Normal;
+            Vector3 velocityNormal = Vector3.Dot(p.Velocity, N) * N;
             Vector3 velocityTangent = p.Velocity - velocityNormal;
 
             // Elastic collision
-            p.Velocity = p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, Normal) * Normal;
+            p.Velocity = p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, N) * N;
 
             // Apply friction
-            p.Velocity = p.Velocity - Friction * velocityTangent;
+            p.Velocity = p.Velocity - friction * velocityTangent;
         }
     }
 }
