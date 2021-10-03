@@ -14,6 +14,7 @@ namespace CustomParticleSystem
         public override bool HasCollisionParticle(Particle p)
         {
             throw new System.NotImplementedException();
+
         }
     }
 }
