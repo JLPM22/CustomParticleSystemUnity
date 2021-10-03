@@ -18,9 +18,7 @@ namespace CustomParticleSystem
 
         public override bool HasCollisionParticle(Particle p)
         {
-            float sign = Vector3.Dot(p.Position, Normal) + D;
-            sign *= Vector3.Dot(p.PreviousPosition, Normal) + D;
-            return sign <= 0;
+            return IsCrossingPlane(p, Normal, D);
         }
 
         public override void CorrectCollisionParticle(Particle p, float deltaTime)
@@ -28,9 +26,9 @@ namespace CustomParticleSystem
             CollisionPlaneParticle(p, Normal, D, Friction);
         }
 
-        public static void CollisionPlaneParticle(Particle p, Vector3 N, float D, float friction)
+        public static void CollisionPlaneParticle(Particle p, Vector3 N, float d, float friction)
         {
-            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + D) * N;
+            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + d) * N;
 
             // Friction
             Vector3 velocityNormal = Vector3.Dot(p.Velocity, N) * N;
@@ -41,6 +39,19 @@ namespace CustomParticleSystem
 
             // Apply friction
             p.Velocity = p.Velocity - friction * velocityTangent;
+        }
+
+        public static bool IsCrossingPlane(Particle p, Vector3 N, float d)
+        {
+            float sign = Vector3.Dot(p.Position, N) + d;
+            sign *= Vector3.Dot(p.PreviousPosition, N) + d;
+            return sign <= 0;
+        }
+
+        public static bool IsNegativeSpacePlane(Particle p, Vector3 N, float d)
+        {
+            float sign = Vector3.Dot(p.Position, N) + d;
+            return sign <= 0;
         }
     }
 }

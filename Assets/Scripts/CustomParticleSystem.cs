@@ -16,8 +16,9 @@ namespace CustomParticleSystem
         private List<GameObject> ParticlesVisual = new List<GameObject>(); // TEMPORAL (waiting for GPU Instancing)
         private Obstacle[] Obstacles;
 
-        private void Start()
+        private IEnumerator Start()
         {
+            yield return null; // Wait one frame for the Destroy() calls to be done (objects bad inited)
             // Find obstacles
             Obstacles = FindObjectsOfType<Obstacle>();
             // Spawn first particle

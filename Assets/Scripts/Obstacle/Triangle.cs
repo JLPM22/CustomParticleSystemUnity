@@ -41,15 +41,9 @@ namespace CustomParticleSystem
 
         public override bool HasCollisionParticle(Particle p)
         {
-            float sign = Vector3.Dot(p.Position, Normal) + D;
-            sign *= Vector3.Dot(p.PreviousPosition, Normal) + D;
-            if (sign <= 0)
+            if (Plane.IsCrossingPlane(p, Normal, D))
             {
-                Vector3 line = p.Position - p.PreviousPosition;
-                float t = (-D - Vector3.Dot(Normal, p.PreviousPosition)) / Vector3.Dot(Normal, line);
-                Vector3 intersectionPoint = p.PreviousPosition + line * t;
-                const float epsilon = 0.0001f;
-                return Mathf.Abs(Area(intersectionPoint, V2, V3) + Area(V1, intersectionPoint, V3) + Area(V1, V2, intersectionPoint) - Area(V1, V2, V3)) < epsilon;
+                return OnTriangleParticle(p, V1, V2, V3, Normal, D);
             }
             return false;
         }
@@ -59,9 +53,19 @@ namespace CustomParticleSystem
             Plane.CollisionPlaneParticle(p, Normal, D, Friction);
         }
 
-        private float Area(Vector3 vi, Vector3 vj, Vector3 vk)
+        private static float Area(Vector3 vi, Vector3 vj, Vector3 vk)
         {
             return 0.5f * Vector3.Cross(vj - vi, vk - vi).magnitude;
+        }
+
+        public static bool OnTriangleParticle(Particle p, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 N, float d)
+        {
+            Vector3 line = p.Position - p.PreviousPosition;
+            float t = (-d - Vector3.Dot(N, p.PreviousPosition)) / Vector3.Dot(N, line);
+            if (t < 0 || t > 1) return false;
+            Vector3 intersectionPoint = p.PreviousPosition + line * t;
+            const float epsilon = 0.0001f;
+            return Mathf.Abs(Area(intersectionPoint, v2, v3) + Area(v1, intersectionPoint, v3) + Area(v1, v2, intersectionPoint) - Area(v1, v2, v3)) < epsilon;
         }
     }
 }
