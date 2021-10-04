@@ -23,22 +23,23 @@ namespace CustomParticleSystem
 
         public override void CorrectCollisionParticle(Particle p, float deltaTime)
         {
-            CollisionPlaneParticle(p, Normal, D, Friction);
+            CollisionPlaneParticle(p, Normal, D, Friction, deltaTime);
         }
 
-        public static void CollisionPlaneParticle(Particle p, Vector3 N, float d, float friction)
+        public static void CollisionPlaneParticle(Particle p, Vector3 N, float d, float friction, float deltaTime)
         {
-            p.Position = p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + d) * N;
-
             // Friction
             Vector3 velocityNormal = Vector3.Dot(p.Velocity, N) * N;
             Vector3 velocityTangent = p.Velocity - velocityNormal;
 
             // Elastic collision
-            p.Velocity = p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, N) * N;
+            p.SetVelocity(p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, N) * N);
 
             // Apply friction
-            p.Velocity = p.Velocity - friction * velocityTangent;
+            p.SetVelocity(p.Velocity - friction * velocityTangent);
+
+            // Update position
+            p.SetPosition(p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + d) * N, deltaTime);
         }
 
         public static bool IsCrossingPlane(Particle p, Vector3 N, float d)

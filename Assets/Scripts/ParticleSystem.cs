@@ -4,10 +4,12 @@ using UnityEngine;
 
 namespace CustomParticleSystem
 {
-    public class CustomParticleSystem : MonoBehaviour
+    public class ParticleSystem : MonoBehaviour
     {
-        [Tooltip("Simulation timestep (independent from the rendering timestep)")] public float SimulationTimestep = 1.0f / 60.0f;
+        [Tooltip("Simulation timestep (independent from the rendering timestep)")]
+        public float SimulationTimestep = 1.0f / 60.0f;
         public Solver ParticleSolver;
+        [Range(0.95f, 1.0f)] public float KVerlet = 1.0f;
         public float Gravity = 9.81f;
         [Range(0.0f, 1.0f)] public float ParticleBouncing = 0.2f;
         public float ParticleMass = 1.0f;
@@ -16,22 +18,26 @@ namespace CustomParticleSystem
         private List<GameObject> ParticlesVisual = new List<GameObject>(); // TEMPORAL (waiting for GPU Instancing)
         private Obstacle[] Obstacles;
 
+        private float AccumulatedDeltaTime = 0.0f;
+
         private IEnumerator Start()
         {
             yield return null; // Wait one frame for the Destroy() calls to be done (objects bad inited)
             // Find obstacles
             Obstacles = FindObjectsOfType<Obstacle>();
             // Spawn first particle
-            SpawnParticle(transform.position, Vector3.zero);
+            SpawnParticle(transform.position, Vector3.zero, SimulationTimestep);
+            // Application framerate
+            Application.targetFrameRate = -1;
         }
 
         private void Update()
         {
-            float deltaTime = Time.deltaTime;
+            float deltaTime = Time.deltaTime + AccumulatedDeltaTime;
 
-            while (deltaTime > 0)
+            while (deltaTime >= SimulationTimestep)
             {
-                float deltaTimeStep = Mathf.Min(deltaTime, SimulationTimestep);
+                float deltaTimeStep = SimulationTimestep;
                 deltaTime -= deltaTimeStep;
 
                 // Update particles
@@ -54,7 +60,7 @@ namespace CustomParticleSystem
                     case Solver.Verlet:
                         for (int i = 0; i < Particles.Count; i++)
                         {
-                            Particles[i].UpdateVerlet(deltaTimeStep);
+                            Particles[i].UpdateVerlet(deltaTimeStep, KVerlet);
                             ParticlesVisual[i].transform.position = Particles[i].Position;
                         }
                         break;
@@ -71,12 +77,14 @@ namespace CustomParticleSystem
                     }
                 }
             }
+
+            AccumulatedDeltaTime = deltaTime;
         }
 
-        private void SpawnParticle(Vector3 pos, Vector3 velocity)
+        private void SpawnParticle(Vector3 pos, Vector3 velocity, float deltaTime)
         {
             Particle p = new Particle();
-            p.Init(pos, velocity, new Vector3(0.0f, -Gravity, 0.0f), ParticleMass, ParticleBouncing);
+            p.Init(pos, velocity, ParticleMass * new Vector3(0.0f, -Gravity, 0.0f), ParticleMass, ParticleBouncing, deltaTime);
             Particles.Add(p);
 
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);

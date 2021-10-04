@@ -42,7 +42,7 @@ namespace CustomParticleSystem
             // Define tangent plane on P
             Vector3 N = Vector3.Normalize(P - Center);
             // Apply collision plane-particle
-            Plane.CollisionPlaneParticle(p, N, -Vector3.Dot(N, P), Friction);
+            Plane.CollisionPlaneParticle(p, N, -Vector3.Dot(N, P), Friction, deltaTime);
         }
     }
 }

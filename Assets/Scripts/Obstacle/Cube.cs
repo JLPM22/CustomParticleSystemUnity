@@ -71,7 +71,7 @@ namespace CustomParticleSystem
 
                 if (Triangle.OnTriangleParticle(p, v1, v2, v3, n, d))
                 {
-                    Plane.CollisionPlaneParticle(p, n, d, Friction);
+                    Plane.CollisionPlaneParticle(p, n, d, Friction, deltaTime);
                     found = true;
                 }
             }

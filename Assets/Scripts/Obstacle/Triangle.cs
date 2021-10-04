@@ -50,7 +50,7 @@ namespace CustomParticleSystem
 
         public override void CorrectCollisionParticle(Particle p, float deltaTime)
         {
-            Plane.CollisionPlaneParticle(p, Normal, D, Friction);
+            Plane.CollisionPlaneParticle(p, Normal, D, Friction, deltaTime);
         }
 
         private static float Area(Vector3 vi, Vector3 vj, Vector3 vk)
