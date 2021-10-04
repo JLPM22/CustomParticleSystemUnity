@@ -14,6 +14,7 @@ namespace CustomParticleSystem
         public float Gravity = 9.81f;
         [Range(0.0f, 1.0f)] public float ParticleBouncing = 0.2f;
         public float ParticleMass = 1.0f;
+        public float ParticleRadius = 0.05f;
 
         private List<Particle> Particles = new List<Particle>();
         private List<GameObject> ParticlesVisual = new List<GameObject>(); // TEMPORAL (waiting for GPU Instancing)
@@ -88,12 +89,12 @@ namespace CustomParticleSystem
         private void SpawnParticle(Vector3 pos, Vector3 velocity, float deltaTime)
         {
             Particle p = new Particle();
-            p.Init(pos, velocity, ParticleMass * new Vector3(0.0f, -Gravity, 0.0f), ParticleMass, ParticleBouncing, deltaTime);
+            p.Init(pos, velocity, ParticleMass * new Vector3(0.0f, -Gravity, 0.0f), ParticleMass, ParticleBouncing, ParticleRadius, deltaTime);
             Particles.Add(p);
 
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.transform.position = pos;
-            go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            go.transform.localScale = new Vector3(ParticleRadius * 2, ParticleRadius * 2, ParticleRadius * 2);
             ParticlesVisual.Add(go);
         }
     }

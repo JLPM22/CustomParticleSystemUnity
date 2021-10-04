@@ -9,23 +9,24 @@ namespace CustomParticleSystem
     {
         public Vector3 Position { get; private set; }
         public Vector3 Velocity { get; private set; }
-        public Vector3 Force { get; private set; }
         public Vector3 PreviousPosition { get; private set; }
-        public Vector3 PreviousPreviousPosition { get; private set; }
         public Vector3 PreviousVelocity { get; private set; }
-        public float Mass { get; private set; }
         public float Bouncing { get; private set; }
 
-        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float mass, float bouncing, float deltaTime)
+        private Vector3 Force;
+        private float Mass;
+        private float Radius;
+
+        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float mass, float bouncing, float radius, float deltaTime)
         {
             Position = position;
             PreviousPosition = Position - velocity * deltaTime;
-            PreviousPreviousPosition = PreviousPosition - velocity * deltaTime;
             Velocity = velocity;
             PreviousVelocity = velocity;
             Force = force;
             Mass = mass;
             Bouncing = bouncing;
+            Radius = radius;
         }
 
         public void UpdateEulerOrig(float deltaTime)
@@ -46,21 +47,26 @@ namespace CustomParticleSystem
 
         public void UpdateVerlet(float deltaTime, float k)
         {
-            PreviousPreviousPosition = PreviousPosition;
+            Vector3 previousPreviousPosition = PreviousPosition;
             PreviousPosition = Position;
-            Position = PreviousPosition + k * (PreviousPosition - PreviousPreviousPosition) + ((deltaTime * deltaTime) * Force) / Mass;
+            Position = PreviousPosition + k * (PreviousPosition - previousPreviousPosition) + ((deltaTime * deltaTime) * Force) / Mass;
             Velocity = (Position - PreviousPosition) / deltaTime;
         }
 
         public void SetPosition(Vector3 newPos, float deltaTime)
         {
             Position = newPos;
-            PreviousPosition = newPos - Velocity * deltaTime;
+            PreviousPosition = Position - Velocity * deltaTime;
         }
 
         public void SetVelocity(Vector3 newVel)
         {
             Velocity = newVel;
+        }
+
+        public Vector3 GetBoundary(Vector3 center, Vector3 normal)
+        {
+            return center + normal * Radius;
         }
     }
 

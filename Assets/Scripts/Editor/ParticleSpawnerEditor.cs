@@ -35,9 +35,11 @@ public class ParticleSpawnerEditor : Editor
 
         ps.ParticleBouncing = EditorGUILayout.Slider("Particle Bouncing", ps.ParticleBouncing, 0.0f, 1.0f);
         ps.ParticleMass = EditorGUILayout.FloatField("Particle Mass", ps.ParticleMass);
+        ps.ParticleRadius = EditorGUILayout.FloatField("Particle Radius", ps.ParticleRadius);
+        if (ps.ParticleRadius < 0.001f) ps.ParticleRadius = 0.001f;
 
         // Save changes
-        if (GUI.changed)
+        if (GUI.changed && !Application.isPlaying)
         {
             EditorUtility.SetDirty(ps);
             EditorSceneManager.MarkSceneDirty(ps.gameObject.scene);

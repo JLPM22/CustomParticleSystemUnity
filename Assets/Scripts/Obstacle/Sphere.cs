@@ -17,7 +17,7 @@ namespace CustomParticleSystem
 
         public override bool HasCollisionParticle(Particle p)
         {
-            return Vector3.SqrMagnitude(p.Position - Center) < Radius * Radius;
+            return Vector3.SqrMagnitude(p.GetBoundary(p.Position, Center - p.Position) - Center) < Radius * Radius;
         }
 
         public override void CorrectCollisionParticle(Particle p, float deltaTime)

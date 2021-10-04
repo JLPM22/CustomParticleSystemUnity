@@ -60,10 +60,11 @@ namespace CustomParticleSystem
 
         public static bool OnTriangleParticle(Particle p, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 N, float d)
         {
-            Vector3 line = p.Position - p.PreviousPosition;
-            float t = (-d - Vector3.Dot(N, p.PreviousPosition)) / Vector3.Dot(N, line);
+            Vector3 previousPosition = p.GetBoundary(p.PreviousPosition, -N);
+            Vector3 line = p.GetBoundary(p.Position, -N) - previousPosition;
+            float t = (-d - Vector3.Dot(N, previousPosition)) / Vector3.Dot(N, line);
             if (t < 0 || t > 1) return false;
-            Vector3 intersectionPoint = p.PreviousPosition + line * t;
+            Vector3 intersectionPoint = previousPosition + line * t;
             const float epsilon = 0.0001f;
             return Mathf.Abs(Area(intersectionPoint, v2, v3) + Area(v1, intersectionPoint, v3) + Area(v1, v2, intersectionPoint) - Area(v1, v2, v3)) < epsilon;
         }

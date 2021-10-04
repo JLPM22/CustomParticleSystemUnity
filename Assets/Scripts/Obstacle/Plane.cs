@@ -39,19 +39,19 @@ namespace CustomParticleSystem
             p.SetVelocity(p.Velocity - friction * velocityTangent);
 
             // Update position
-            p.SetPosition(p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.Position, N) + d) * N, deltaTime);
+            p.SetPosition(p.Position - (1 + p.Bouncing) * (Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d) * N, deltaTime);
         }
 
         public static bool IsCrossingPlane(Particle p, Vector3 N, float d)
         {
-            float sign = Vector3.Dot(p.Position, N) + d;
-            sign *= Vector3.Dot(p.PreviousPosition, N) + d;
+            float sign = Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d;
+            sign *= Vector3.Dot(p.GetBoundary(p.PreviousPosition, -N), N) + d;
             return sign <= 0;
         }
 
         public static bool IsNegativeSpacePlane(Particle p, Vector3 N, float d)
         {
-            float sign = Vector3.Dot(p.Position, N) + d;
+            float sign = Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d;
             return sign <= 0;
         }
 

@@ -782,6 +782,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
+      propertyPath: KVerlet
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
+      propertyPath: ParticleRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleSolver
       value: 2
       objectReference: {fileID: 0}
