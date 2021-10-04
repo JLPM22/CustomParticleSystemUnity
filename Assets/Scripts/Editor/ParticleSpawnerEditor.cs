@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEditor;
 using CustomParticleSystem;
 
-using ParticleSystem = CustomParticleSystem.ParticleSystem;
+using ParticleSpawner = CustomParticleSystem.ParticleSpawner;
 using Solver = CustomParticleSystem.Solver;
 using UnityEditor.SceneManagement;
 
-[CustomEditor(typeof(ParticleSystem))]
-public class ParticleSystemEditor : Editor
+[CustomEditor(typeof(ParticleSpawner))]
+public class ParticleSpawnerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         const int space = 5;
 
-        ParticleSystem ps = (ParticleSystem)target;
+        ParticleSpawner ps = (ParticleSpawner)target;
 
         EditorGUILayout.BeginHorizontal();
         ps.SimulationTimestep = EditorGUILayout.FloatField("Simulation Timestep", ps.SimulationTimestep);

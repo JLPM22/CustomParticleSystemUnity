@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CustomParticleSystem
 {
-    public class ParticleSystem : MonoBehaviour
+    public class ParticleSpawner : MonoBehaviour
     {
         [Tooltip("Simulation timestep (independent from the rendering timestep)")]
         public float SimulationTimestep = 1.0f / 60.0f;
@@ -25,6 +26,7 @@ namespace CustomParticleSystem
             yield return null; // Wait one frame for the Destroy() calls to be done (objects bad inited)
             // Find obstacles
             Obstacles = FindObjectsOfType<Obstacle>();
+            Array.Sort(Obstacles, (a, b) => a.GetPriority() > b.GetPriority() ? -1 : 1);
             // Spawn first particle
             SpawnParticle(transform.position, Vector3.zero, SimulationTimestep);
             // Application framerate
@@ -68,11 +70,13 @@ namespace CustomParticleSystem
                 // Check Collisions
                 for (int i = 0; i < Particles.Count; i++)
                 {
-                    for (int j = 0; j < Obstacles.Length; j++)
+                    bool found = false;
+                    for (int j = 0; j < Obstacles.Length && !found; j++)
                     {
                         if (Obstacles[j].HasCollisionParticle(Particles[i]))
                         {
                             Obstacles[j].CorrectCollisionParticle(Particles[i], deltaTimeStep);
+                            found = true;
                         }
                     }
                 }

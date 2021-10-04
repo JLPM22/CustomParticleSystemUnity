@@ -791,11 +791,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: SimulationTimestep
-      value: 0.0025
+      value: 0.016666668
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739069, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: m_Name
-      value: ParticleSystem
+      value: ParticleSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739071, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: m_RootOrder

@@ -54,5 +54,10 @@ namespace CustomParticleSystem
             float sign = Vector3.Dot(p.Position, N) + d;
             return sign <= 0;
         }
+
+        public override int GetPriority()
+        {
+            return 100;
+        }
     }
 }
