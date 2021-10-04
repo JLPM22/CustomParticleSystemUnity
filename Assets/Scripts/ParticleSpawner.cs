@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+
+using Debug = UnityEngine.Debug;
 
 namespace CustomParticleSystem
 {
@@ -100,12 +103,14 @@ namespace CustomParticleSystem
                 // Check Collisions
                 for (int i = 0; i < Particles.Count; i++)
                 {
+                    Particle p = Particles[i];
                     bool found = false;
                     for (int j = 0; j < Obstacles.Length && !found; j++)
                     {
-                        if (Obstacles[j].HasCollisionParticle(Particles[i]))
+                        Obstacle o = Obstacles[j];
+                        if (o.HasCollisionParticle(p))
                         {
-                            Obstacles[j].CorrectCollisionParticle(Particles[i], deltaTimeStep);
+                            o.CorrectCollisionParticle(p, deltaTimeStep);
                             found = true;
                         }
                     }

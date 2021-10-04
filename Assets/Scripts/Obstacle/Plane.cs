@@ -28,12 +28,14 @@ namespace CustomParticleSystem
 
         public static void CollisionPlaneParticle(Particle p, Vector3 N, float d, float friction, float deltaTime)
         {
+            float dotVN = Vector3.Dot(p.Velocity, N);
+
             // Friction
-            Vector3 velocityNormal = Vector3.Dot(p.Velocity, N) * N;
+            Vector3 velocityNormal = dotVN * N;
             Vector3 velocityTangent = p.Velocity - velocityNormal;
 
             // Elastic collision
-            p.SetVelocity(p.Velocity - (1 + p.Bouncing) * Vector3.Dot(p.Velocity, N) * N);
+            p.SetVelocity(p.Velocity - (1 + p.Bouncing) * velocityNormal);
 
             // Apply friction
             p.SetVelocity(p.Velocity - friction * velocityTangent);

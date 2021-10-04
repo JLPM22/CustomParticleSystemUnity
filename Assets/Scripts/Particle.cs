@@ -61,6 +61,7 @@ namespace CustomParticleSystem
             {
                 Vector3 previousPreviousPosition = PreviousPosition;
                 PreviousPosition = Position;
+                PreviousVelocity = Velocity;
                 Position = PreviousPosition + k * (PreviousPosition - previousPreviousPosition) + ((deltaTime * deltaTime) * Force) / Mass;
                 Velocity = (Position - PreviousPosition) / deltaTime;
                 UpdateLifeTime(deltaTime);

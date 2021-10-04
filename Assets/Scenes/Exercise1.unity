@@ -528,6 +528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Triangle (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
 --- !u!1001 &1966909138
@@ -592,6 +596,10 @@ PrefabInstance:
     - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
       propertyPath: m_Name
       value: Triangle
+      objectReference: {fileID: 0}
+    - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
@@ -666,6 +674,10 @@ PrefabInstance:
     - target: {fileID: 6062777215006377639, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_Name
       value: Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062777215006377639, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_RootOrder
@@ -787,7 +799,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionRate
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleMesh
@@ -815,7 +827,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: f49352048a1d39d49a778a11a468c0ee, type: 2}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: SimulationTimestep
-      value: 0.016666668
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: MaximumNumberParticles
