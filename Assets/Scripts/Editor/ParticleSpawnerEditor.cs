@@ -30,12 +30,20 @@ public class ParticleSpawnerEditor : Editor
         }
         EditorGUILayout.Space(space);
 
+        ps.EmissionRate = EditorGUILayout.FloatField("Emission Rate", ps.EmissionRate);
+        if (ps.EmissionRate <= 0) ps.EmissionRate = 0.1f;
         ps.Gravity = EditorGUILayout.FloatField("Gravity", ps.Gravity);
+        ps.MaximumNumberParticles = EditorGUILayout.IntField("Max Particles", ps.MaximumNumberParticles);
+        if (ps.MaximumNumberParticles < 1) ps.MaximumNumberParticles = 1;
         EditorGUILayout.Space(space);
 
+        ps.ParticleLifeTime = EditorGUILayout.FloatField("Particle Life Time", ps.ParticleLifeTime);
+        if (ps.ParticleLifeTime <= 0) ps.ParticleLifeTime = 0.1f;
         ps.ParticleBouncing = EditorGUILayout.Slider("Particle Bouncing", ps.ParticleBouncing, 0.0f, 1.0f);
         ps.ParticleMass = EditorGUILayout.FloatField("Particle Mass", ps.ParticleMass);
         ps.ParticleRadius = EditorGUILayout.FloatField("Particle Radius", ps.ParticleRadius);
+        ps.ParticleMesh = (Mesh)EditorGUILayout.ObjectField("Particle Mesh", ps.ParticleMesh, typeof(Mesh), false);
+        ps.ParticleMaterial = (Material)EditorGUILayout.ObjectField("Particle Material", ps.ParticleMaterial, typeof(Material), false);
         if (ps.ParticleRadius < 0.001f) ps.ParticleRadius = 0.001f;
 
         // Save changes

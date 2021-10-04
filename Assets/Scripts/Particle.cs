@@ -12,12 +12,13 @@ namespace CustomParticleSystem
         public Vector3 PreviousPosition { get; private set; }
         public Vector3 PreviousVelocity { get; private set; }
         public float Bouncing { get; private set; }
+        public float LifeTime { get; private set; } = -1.0f;
 
         private Vector3 Force;
         private float Mass;
         private float Radius;
 
-        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float mass, float bouncing, float radius, float deltaTime)
+        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float mass, float bouncing, float radius, float lifeTime, float deltaTime)
         {
             Position = position;
             PreviousPosition = Position - velocity * deltaTime;
@@ -27,30 +28,43 @@ namespace CustomParticleSystem
             Mass = mass;
             Bouncing = bouncing;
             Radius = radius;
+            LifeTime = lifeTime;
         }
 
         public void UpdateEulerOrig(float deltaTime)
         {
-            PreviousPosition = Position;
-            PreviousVelocity = Velocity;
-            Position += Velocity * deltaTime;
-            Velocity += (Force / Mass) * deltaTime;
+            if (LifeTime > 0.0f)
+            {
+                PreviousPosition = Position;
+                PreviousVelocity = Velocity;
+                Position += Velocity * deltaTime;
+                Velocity += (Force / Mass) * deltaTime;
+                UpdateLifeTime(deltaTime);
+            }
         }
 
         public void UpdateEulerSemi(float deltaTime)
         {
-            PreviousPosition = Position;
-            PreviousVelocity = Velocity;
-            Velocity += (Force / Mass) * deltaTime;
-            Position += Velocity * deltaTime;
+            if (LifeTime > 0.0f)
+            {
+                PreviousPosition = Position;
+                PreviousVelocity = Velocity;
+                Velocity += (Force / Mass) * deltaTime;
+                Position += Velocity * deltaTime;
+                UpdateLifeTime(deltaTime);
+            }
         }
 
         public void UpdateVerlet(float deltaTime, float k)
         {
-            Vector3 previousPreviousPosition = PreviousPosition;
-            PreviousPosition = Position;
-            Position = PreviousPosition + k * (PreviousPosition - previousPreviousPosition) + ((deltaTime * deltaTime) * Force) / Mass;
-            Velocity = (Position - PreviousPosition) / deltaTime;
+            if (LifeTime > 0.0f)
+            {
+                Vector3 previousPreviousPosition = PreviousPosition;
+                PreviousPosition = Position;
+                Position = PreviousPosition + k * (PreviousPosition - previousPreviousPosition) + ((deltaTime * deltaTime) * Force) / Mass;
+                Velocity = (Position - PreviousPosition) / deltaTime;
+                UpdateLifeTime(deltaTime);
+            }
         }
 
         public void SetPosition(Vector3 newPos, float deltaTime)
@@ -67,6 +81,12 @@ namespace CustomParticleSystem
         public Vector3 GetBoundary(Vector3 center, Vector3 normal)
         {
             return center + normal * Radius;
+        }
+
+        private void UpdateLifeTime(float deltaTime)
+        {
+            LifeTime -= deltaTime;
+            if (LifeTime <= 0.0f) LifeTime = -1.0f;
         }
     }
 
