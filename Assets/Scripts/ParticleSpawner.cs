@@ -23,6 +23,9 @@ namespace CustomParticleSystem
         public Material ParticleMaterial;
         public int MaximumNumberParticles;
         public float EmissionRate = 1.0f;
+        public Method ExecutionMethod = Method.CPU_Single_Thread;
+        public Shape EmissionShape = Shape.Point;
+        public float EmissionSphereRadius = 1.0f;
 
         private List<Particle> Particles = new List<Particle>();
         private Obstacle[] Obstacles;
@@ -78,51 +81,79 @@ namespace CustomParticleSystem
                 float deltaTimeStep = SimulationTimestep;
                 deltaTime -= deltaTimeStep;
 
-                // Update particles
-                switch (ParticleSolver)
+                switch (ExecutionMethod)
                 {
-                    case Solver.EulerOrig:
-                        for (int i = 0; i < Particles.Count; i++)
-                        {
-                            Particles[i].UpdateEulerOrig(deltaTimeStep);
-                        }
+                    case Method.CPU_Single_Thread:
+                        SolveCPUSingleThread(deltaTimeStep);
                         break;
-                    case Solver.EulerSemi:
-                        for (int i = 0; i < Particles.Count; i++)
-                        {
-                            Particles[i].UpdateEulerSemi(deltaTimeStep);
-                        }
+                    case Method.CPU_Multi_Thread:
+                        SolveCPUMultithread(deltaTimeStep);
                         break;
-                    case Solver.Verlet:
-                        for (int i = 0; i < Particles.Count; i++)
-                        {
-                            Particles[i].UpdateVerlet(deltaTimeStep, KVerlet);
-                        }
+                    case Method.GPU:
+                        SolveGPU(deltaTimeStep);
                         break;
-                }
-                // Check Collisions
-                for (int i = 0; i < Particles.Count; i++)
-                {
-                    Particle p = Particles[i];
-                    bool found = false;
-                    for (int j = 0; j < Obstacles.Length && !found; j++)
-                    {
-                        Obstacle o = Obstacles[j];
-                        if (o.HasCollisionParticle(p))
-                        {
-                            o.CorrectCollisionParticle(p, deltaTimeStep);
-                            found = true;
-                        }
-                    }
                 }
             }
-
             // Render
             CPURenderer.UpdateInstances(Particles);
             CPURenderer.Render();
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
+        }
+
+        private Stopwatch sw = new Stopwatch();
+
+        private void SolveCPUSingleThread(float deltaTime)
+        {
+            // Update particles
+            switch (ParticleSolver)
+            {
+                case Solver.EulerOrig:
+                    for (int i = 0; i < Particles.Count; i++)
+                    {
+                        Particles[i].UpdateEulerOrig(deltaTime);
+                    }
+                    break;
+                case Solver.EulerSemi:
+                    for (int i = 0; i < Particles.Count; i++)
+                    {
+                        Particles[i].UpdateEulerSemi(deltaTime);
+                    }
+                    break;
+                case Solver.Verlet:
+                    for (int i = 0; i < Particles.Count; i++)
+                    {
+                        Particles[i].UpdateVerlet(deltaTime, KVerlet);
+                    }
+                    break;
+            }
+
+            // Check Collisions
+            for (int i = 0; i < Particles.Count; i++)
+            {
+                Particle p = Particles[i];
+                bool found = false;
+                for (int j = 0; j < Obstacles.Length && !found; j++)
+                {
+                    Obstacle o = Obstacles[j];
+                    if (o.HasCollisionParticle(p))
+                    {
+                        o.CorrectCollisionParticle(p, deltaTime);
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        private void SolveCPUMultithread(float deltaTime)
+        {
+
+        }
+
+        private void SolveGPU(float deltaTime)
+        {
+            throw new NotImplementedException();
         }
 
         private void SpawnParticle(Vector3 pos, Vector3 velocity, float deltaTime)
@@ -161,6 +192,36 @@ namespace CustomParticleSystem
         private void OnDestroy()
         {
             if (CPURenderer != null) CPURenderer.Release();
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            switch (EmissionShape)
+            {
+                case Shape.Point:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawWireSphere(transform.position, 0.01f);
+                    break;
+                case Shape.Sphere:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawWireSphere(transform.position, EmissionSphereRadius);
+                    break;
+            }
+        }
+#endif
+
+        public enum Method
+        {
+            CPU_Single_Thread,
+            CPU_Multi_Thread,
+            GPU
+        }
+
+        public enum Shape
+        {
+            Point,
+            Sphere
         }
     }
 }

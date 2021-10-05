@@ -19,8 +19,18 @@ public class ParticleSpawnerEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
         ps.SimulationTimestep = EditorGUILayout.FloatField("Simulation Timestep", ps.SimulationTimestep);
+        if (ps.SimulationTimestep <= 0.0f) ps.SimulationTimestep = 0.001f;
         EditorGUILayout.LabelField("FPS: " + (1 / ps.SimulationTimestep).ToString("F0"));
         EditorGUILayout.EndHorizontal();
+        ps.ExecutionMethod = (ParticleSpawner.Method)EditorGUILayout.EnumPopup("Execution Method", ps.ExecutionMethod);
+        EditorGUILayout.Space(space);
+
+        ps.EmissionShape = (ParticleSpawner.Shape)EditorGUILayout.EnumPopup("Emission Shape", ps.EmissionShape);
+        if (ps.EmissionShape == ParticleSpawner.Shape.Sphere)
+        {
+            ps.EmissionSphereRadius = EditorGUILayout.FloatField("Emission Sphere Radius", ps.EmissionSphereRadius);
+            if (ps.EmissionSphereRadius <= 0.0f) ps.EmissionSphereRadius = 0.001f;
+        }
         EditorGUILayout.Space(space);
 
         ps.ParticleSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ps.ParticleSolver);

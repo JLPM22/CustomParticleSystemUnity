@@ -12,7 +12,7 @@ namespace CustomParticleSystem
         public Vector3 PreviousPosition { get; private set; }
         public Vector3 PreviousVelocity { get; private set; }
         public float Bouncing { get; private set; }
-        public float LifeTime { get; private set; } = -1.0f;
+        public float LifeTime { get; private set; }
 
         private Vector3 Force;
         private float Mass;
@@ -87,7 +87,7 @@ namespace CustomParticleSystem
         private void UpdateLifeTime(float deltaTime)
         {
             LifeTime -= deltaTime;
-            if (LifeTime <= 0.0f) LifeTime = -1.0f;
+            if (LifeTime <= 0.0f) LifeTime = 0.0f;
         }
     }
 
