@@ -7,27 +7,25 @@ namespace CustomParticleSystem
     [System.Serializable]
     public class Particle
     {
+        public static float Mass;
+        public static float Radius;
+        public static float Bouncing;
+
         public Vector3 Position { get; private set; }
         public Vector3 Velocity { get; private set; }
         public Vector3 PreviousPosition { get; private set; }
         public Vector3 PreviousVelocity { get; private set; }
-        public float Bouncing { get; private set; }
         public float LifeTime { get; private set; }
 
         private Vector3 Force;
-        private float Mass;
-        private float Radius;
 
-        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float mass, float bouncing, float radius, float lifeTime, float deltaTime)
+        public void Init(Vector3 position, Vector3 velocity, Vector3 force, float lifeTime, float deltaTime)
         {
             Position = position;
             PreviousPosition = Position - velocity * deltaTime;
             Velocity = velocity;
             PreviousVelocity = velocity;
             Force = force;
-            Mass = mass;
-            Bouncing = bouncing;
-            Radius = radius;
             LifeTime = lifeTime;
         }
 

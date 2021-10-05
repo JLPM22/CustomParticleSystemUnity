@@ -5,6 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace CustomParticleSystem
 {
@@ -25,14 +26,19 @@ namespace CustomParticleSystem
         public float EmissionRate = 1.0f;
         public Method ExecutionMethod = Method.CPU_Single_Thread;
         public Shape EmissionShape = Shape.Point;
-        public float EmissionSphereRadius = 1.0f;
+        public float EmissionExplosionSpeed = 10.0f;
+        public float EmissionFountainSpeed = 10.0f;
+        public float EmissionWaterfallHeight = 10.0f;
+        public float EmissionWaterfallSpeed = 10.0f;
+        public float EmissionSemiSphereRadius = 0.5f;
+        public float EmissionSemiSphereSpeed = 10.0f;
 
         private List<Particle> Particles = new List<Particle>();
         private Obstacle[] Obstacles;
 
         private float AccumulatedDeltaTime = 0.0f;
         private int LastMaximumNumberParticles;
-        private float TimeToNextEmission = 0.0f;
+        private float AccumulatedTimeEmission = 0.0f;
 
         private CPUParticleRenderer CPURenderer;
 
@@ -67,11 +73,13 @@ namespace CustomParticleSystem
             }
 
             // Emit particles
-            TimeToNextEmission -= Time.deltaTime;
-            if (TimeToNextEmission <= 0.0f)
+            LastIndexSearchAvailable = 0;
+            AccumulatedTimeEmission += Time.deltaTime;
+            float timeEmission = 1.0f / EmissionRate;
+            while (AccumulatedTimeEmission >= timeEmission)
             {
-                SpawnParticle(transform.position, Vector3.zero, SimulationTimestep);
-                TimeToNextEmission = 1.0f / EmissionRate;
+                SpawnParticle(SimulationTimestep);
+                AccumulatedTimeEmission -= timeEmission;
             }
 
             // Update particles
@@ -94,15 +102,17 @@ namespace CustomParticleSystem
                         break;
                 }
             }
+
             // Render
             CPURenderer.UpdateInstances(Particles);
             CPURenderer.Render();
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
+            Particle.Mass = ParticleMass;
+            Particle.Radius = ParticleRadius;
+            Particle.Bouncing = ParticleBouncing;
         }
-
-        private Stopwatch sw = new Stopwatch();
 
         private void SolveCPUSingleThread(float deltaTime)
         {
@@ -133,17 +143,28 @@ namespace CustomParticleSystem
             for (int i = 0; i < Particles.Count; i++)
             {
                 Particle p = Particles[i];
-                bool found = false;
-                for (int j = 0; j < Obstacles.Length && !found; j++)
+                if (p.LifeTime > 0.0f)
                 {
-                    Obstacle o = Obstacles[j];
-                    if (o.HasCollisionParticle(p))
+                    bool found = false;
+                    for (int j = 0; j < Obstacles.Length && !found; j++)
                     {
-                        o.CorrectCollisionParticle(p, deltaTime);
-                        found = true;
+                        Obstacle o = Obstacles[j];
+                        if (o.HasCollisionParticle(p))
+                        {
+                            o.CorrectCollisionParticle(p, deltaTime);
+                            found = true;
+                        }
                     }
                 }
             }
+        }
+
+        private bool Test(Particle p)
+        {
+            float d = -Vector3.Dot(Vector3.up, Vector3.zero);
+            float sign = Vector3.Dot(p.Position - Vector3.up * ParticleRadius, Vector3.up) + d;
+            sign *= Vector3.Dot(p.PreviousPosition - Vector3.up * ParticleRadius, Vector3.up) + d;
+            return sign <= 0;
         }
 
         private void SolveCPUMultithread(float deltaTime)
@@ -156,19 +177,53 @@ namespace CustomParticleSystem
             throw new NotImplementedException();
         }
 
-        private void SpawnParticle(Vector3 pos, Vector3 velocity, float deltaTime)
+        private void SpawnParticle(float deltaTime)
         {
             int index = FindFirstAvailableParticle();
             if (index != -1)
             {
-                Particles[index].Init(pos, velocity, ParticleMass * new Vector3(0.0f, -Gravity, 0.0f), ParticleMass, ParticleBouncing, ParticleRadius, ParticleLifeTime, deltaTime);
+                // Emission Shape
+                Vector3 spawnPos = new Vector3();
+                Vector3 velocitySpawn = new Vector3();
+                switch (EmissionShape)
+                {
+                    case Shape.Point:
+                        spawnPos = transform.position;
+                        break;
+                    case Shape.Explosion:
+                        float alpha = (360.0f * (Random.value - 0.5f)) * Mathf.Deg2Rad;
+                        float beta = (180.0f * (Random.value - 0.5f)) * Mathf.Deg2Rad;
+                        spawnPos = new Vector3(Mathf.Cos(alpha) * Mathf.Cos(beta), Mathf.Sin(beta), Mathf.Sin(alpha) * Mathf.Cos(beta));
+                        velocitySpawn = EmissionExplosionSpeed * spawnPos;
+                        spawnPos = spawnPos * 0.01f + transform.position;
+                        break;
+                    case Shape.Fountain:
+                        spawnPos = transform.position;
+                        velocitySpawn = new Vector3(Random.value - 0.5f, EmissionFountainSpeed, Random.value - 0.5f);
+                        break;
+                    case Shape.Waterfall:
+                        spawnPos = transform.position + Vector3.up * EmissionWaterfallHeight;
+                        velocitySpawn = new Vector3(Random.value - 0.5f, -EmissionWaterfallSpeed, Random.value - 0.5f);
+                        break;
+                    case Shape.SemiSphere:
+                        alpha = (360.0f * (Random.value - 0.5f)) * Mathf.Deg2Rad;
+                        beta = (90.0f * Random.value) * Mathf.Deg2Rad;
+                        spawnPos = new Vector3(Mathf.Cos(alpha) * Mathf.Cos(beta), Mathf.Sin(beta), Mathf.Sin(alpha) * Mathf.Cos(beta));
+                        velocitySpawn = EmissionSemiSphereSpeed * spawnPos;
+                        spawnPos = spawnPos * EmissionSemiSphereRadius + transform.position;
+                        break;
+                }
+                // Init Particle
+                Particles[index].Init(spawnPos, velocitySpawn, ParticleMass * new Vector3(0.0f, -Gravity, 0.0f), ParticleLifeTime, deltaTime);
             }
         }
 
+        private int LastIndexSearchAvailable = 0;
         private int FindFirstAvailableParticle()
         {
-            for (int i = 0; i < Particles.Count; i++)
+            for (int i = LastIndexSearchAvailable; i < Particles.Count; i++)
             {
+                LastIndexSearchAvailable = i + 1;
                 if (Particles[i].LifeTime <= 0.0f) return i;
             }
             return -1;
@@ -194,23 +249,6 @@ namespace CustomParticleSystem
             if (CPURenderer != null) CPURenderer.Release();
         }
 
-#if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
-        {
-            switch (EmissionShape)
-            {
-                case Shape.Point:
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawWireSphere(transform.position, 0.01f);
-                    break;
-                case Shape.Sphere:
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawWireSphere(transform.position, EmissionSphereRadius);
-                    break;
-            }
-        }
-#endif
-
         public enum Method
         {
             CPU_Single_Thread,
@@ -221,7 +259,10 @@ namespace CustomParticleSystem
         public enum Shape
         {
             Point,
-            Sphere
+            Fountain,
+            Waterfall,
+            SemiSphere,
+            Explosion
         }
     }
 }

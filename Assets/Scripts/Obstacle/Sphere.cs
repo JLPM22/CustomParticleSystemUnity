@@ -6,13 +6,13 @@ namespace CustomParticleSystem
 {
     public class Sphere : Obstacle
     {
-        private Vector3 Center
+        private Vector3 Center;
+        private float Radius;
+
+        private void Update()
         {
-            get { return transform.position; }
-        }
-        private float Radius
-        {
-            get { return transform.localScale.x * 0.5f; }
+            Center = transform.position;
+            Radius = transform.localScale.x * 0.5f;
         }
 
         public override bool HasCollisionParticle(Particle p)

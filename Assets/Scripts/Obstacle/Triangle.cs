@@ -6,21 +6,20 @@ namespace CustomParticleSystem
 {
     public class Triangle : Obstacle
     {
-        private Vector3 Normal
-        {
-            get { return transform.up; }
-        }
-
-        // ax + by + cz + D = 0
-        private float D
-        {
-            get { return -Vector3.Dot(Normal, transform.position); }
-        }
+        private Vector3 Normal;
+        private float D; // ax + by + cz + D = 0
 
         private Vector4[] VerticesLocalPos;
-        private Vector3 V1 { get { return transform.localToWorldMatrix * VerticesLocalPos[0]; } }
-        private Vector3 V2 { get { return transform.localToWorldMatrix * VerticesLocalPos[1]; } }
-        private Vector3 V3 { get { return transform.localToWorldMatrix * VerticesLocalPos[2]; } }
+        private Vector3 V1, V2, V3;
+
+        private void Update()
+        {
+            Normal = transform.up;
+            D = -Vector3.Dot(Normal, transform.position);
+            V1 = transform.localToWorldMatrix * VerticesLocalPos[0];
+            V2 = transform.localToWorldMatrix * VerticesLocalPos[1];
+            V3 = transform.localToWorldMatrix * VerticesLocalPos[2];
+        }
 
         private void Awake()
         {

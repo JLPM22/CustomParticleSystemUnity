@@ -26,10 +26,24 @@ public class ParticleSpawnerEditor : Editor
         EditorGUILayout.Space(space);
 
         ps.EmissionShape = (ParticleSpawner.Shape)EditorGUILayout.EnumPopup("Emission Shape", ps.EmissionShape);
-        if (ps.EmissionShape == ParticleSpawner.Shape.Sphere)
+        if (ps.EmissionShape == ParticleSpawner.Shape.Explosion)
         {
-            ps.EmissionSphereRadius = EditorGUILayout.FloatField("Emission Sphere Radius", ps.EmissionSphereRadius);
-            if (ps.EmissionSphereRadius <= 0.0f) ps.EmissionSphereRadius = 0.001f;
+            ps.EmissionExplosionSpeed = EditorGUILayout.FloatField("Explosion Speed", ps.EmissionExplosionSpeed);
+        }
+        else if (ps.EmissionShape == ParticleSpawner.Shape.Fountain)
+        {
+            ps.EmissionFountainSpeed = EditorGUILayout.FloatField("Fountain Speed", ps.EmissionFountainSpeed);
+        }
+        else if (ps.EmissionShape == ParticleSpawner.Shape.Waterfall)
+        {
+            ps.EmissionWaterfallHeight = EditorGUILayout.FloatField("Waterfall Height", ps.EmissionWaterfallHeight);
+            ps.EmissionWaterfallSpeed = EditorGUILayout.FloatField("Waterfall Speed", ps.EmissionWaterfallSpeed);
+        }
+        else if (ps.EmissionShape == ParticleSpawner.Shape.SemiSphere)
+        {
+            ps.EmissionSemiSphereRadius = EditorGUILayout.FloatField("Semi-Sphere Radius", ps.EmissionSemiSphereRadius);
+            if (ps.EmissionSemiSphereRadius <= 0.0f) ps.EmissionSemiSphereRadius = 0.01f;
+            ps.EmissionSemiSphereSpeed = EditorGUILayout.FloatField("SemiSphere Speed", ps.EmissionSemiSphereSpeed);
         }
         EditorGUILayout.Space(space);
 

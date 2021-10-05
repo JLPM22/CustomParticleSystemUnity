@@ -6,20 +6,26 @@ namespace CustomParticleSystem
 {
     public class Cube : Obstacle
     {
-        private Vector3 N1 { get { return transform.up; } }
-        private float D1 { get { return -Vector3.Dot(N1, transform.position + transform.up * transform.localScale.y * 0.5f); } }
-        private Vector3 N2 { get { return -transform.up; } }
-        private float D2 { get { return -Vector3.Dot(N2, transform.position - transform.up * transform.localScale.y * 0.5f); } }
-        private Vector3 N3 { get { return transform.forward; } }
-        private float D3 { get { return -Vector3.Dot(N3, transform.position + transform.forward * transform.localScale.z * 0.5f); } }
-        private Vector3 N4 { get { return -transform.forward; } }
-        private float D4 { get { return -Vector3.Dot(N4, transform.position - transform.forward * transform.localScale.z * 0.5f); } }
-        private Vector3 N5 { get { return transform.right; } }
-        private float D5 { get { return -Vector3.Dot(N5, transform.position + transform.right * transform.localScale.x * 0.5f); } }
-        private Vector3 N6 { get { return -transform.right; } }
-        private float D6 { get { return -Vector3.Dot(N6, transform.position - transform.right * transform.localScale.x * 0.5f); } }
+        private Vector3 N1, N2, N3, N4, N5, N6;
+        private float D1, D2, D3, D4, D5, D6;
 
         private Vector4[][] TrianglesLocalPos;
+
+        private void Update()
+        {
+            N1 = transform.up;
+            D1 = -Vector3.Dot(N1, transform.position + transform.up * transform.localScale.y * 0.5f);
+            N2 = -transform.up;
+            D2 = -Vector3.Dot(N2, transform.position - transform.up * transform.localScale.y * 0.5f);
+            N3 = transform.forward;
+            D3 = -Vector3.Dot(N3, transform.position + transform.forward * transform.localScale.z * 0.5f);
+            N4 = -transform.forward;
+            D4 = -Vector3.Dot(N4, transform.position - transform.forward * transform.localScale.z * 0.5f);
+            N5 = transform.right;
+            D5 = -Vector3.Dot(N5, transform.position + transform.right * transform.localScale.x * 0.5f);
+            N6 = -transform.right;
+            D6 = -Vector3.Dot(N6, transform.position - transform.right * transform.localScale.x * 0.5f);
+        }
 
         private void Awake()
         {
