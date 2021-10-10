@@ -22,7 +22,10 @@ public class ParticleSpawnerEditor : Editor
         if (ps.SimulationTimestep <= 0.0f) ps.SimulationTimestep = 0.001f;
         EditorGUILayout.LabelField("FPS: " + (1 / ps.SimulationTimestep).ToString("F0"));
         EditorGUILayout.EndHorizontal();
-        ps.ExecutionMethod = (ParticleSpawner.Method)EditorGUILayout.EnumPopup("Execution Method", ps.ExecutionMethod);
+        if (!Application.isPlaying)
+        {
+            ps.ExecutionMethod = (ParticleSpawner.Method)EditorGUILayout.EnumPopup("Execution Method", ps.ExecutionMethod);
+        }
         EditorGUILayout.Space(space);
 
         ps.EmissionShape = (ParticleSpawner.Shape)EditorGUILayout.EnumPopup("Emission Shape", ps.EmissionShape);
