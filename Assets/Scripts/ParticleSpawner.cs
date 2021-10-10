@@ -159,14 +159,6 @@ namespace CustomParticleSystem
             }
         }
 
-        private bool Test(Particle p)
-        {
-            float d = -Vector3.Dot(Vector3.up, Vector3.zero);
-            float sign = Vector3.Dot(p.Position - Vector3.up * ParticleRadius, Vector3.up) + d;
-            sign *= Vector3.Dot(p.PreviousPosition - Vector3.up * ParticleRadius, Vector3.up) + d;
-            return sign <= 0;
-        }
-
         private void SolveCPUMultithread(float deltaTime)
         {
 
