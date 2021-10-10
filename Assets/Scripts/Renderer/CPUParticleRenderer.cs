@@ -8,26 +8,6 @@ namespace CustomParticleSystem
 {
     public class CPUParticleRenderer : ParticleRenderer
     {
-        private struct InstanceData
-        {
-            public Matrix4x4 TRSMatrix;
-
-            public InstanceData(Matrix4x4 tRSMatrix)
-            {
-                TRSMatrix = tRSMatrix;
-            }
-
-            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale)
-            {
-                TRSMatrix = Matrix4x4.TRS(position, rotation, scale);
-            }
-
-            public static int Size()
-            {
-                return sizeof(float) * 4 * 4;
-            }
-        }
-
         private List<Particle> Particles = new List<Particle>();
         private Bounds Bounds = new Bounds(Vector3.zero, 10000 * Vector3.one);
         private ComputeBuffer InstancesBuffer;

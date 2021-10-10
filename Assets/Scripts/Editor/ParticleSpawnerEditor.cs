@@ -50,7 +50,15 @@ public class ParticleSpawnerEditor : Editor
         }
         EditorGUILayout.Space(space);
 
-        ps.ParticleSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ps.ParticleSolver);
+        if (ps.ExecutionMethod != ParticleSpawner.Method.GPU)
+        {
+            ps.ParticleSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ps.ParticleSolver);
+        }
+        else
+        {
+            ps.ParticleSolver = Solver.Verlet;
+            EditorGUILayout.LabelField("Particle Solver: Verlet");
+        }
         if (ps.ParticleSolver == Solver.Verlet)
         {
             ps.KVerlet = EditorGUILayout.Slider("K Verlet", ps.KVerlet, 0.95f, 1.0f);

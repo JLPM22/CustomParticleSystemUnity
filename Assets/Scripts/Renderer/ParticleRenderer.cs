@@ -23,5 +23,25 @@ namespace CustomParticleSystem
         public abstract void SetMaximumParticles(int maxParticles);
         public abstract void SetRadius(float radius);
         public abstract void Release();
+
+        protected struct InstanceData
+        {
+            public Matrix4x4 TRSMatrix;
+
+            public InstanceData(Matrix4x4 tRSMatrix)
+            {
+                TRSMatrix = tRSMatrix;
+            }
+
+            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale)
+            {
+                TRSMatrix = Matrix4x4.TRS(position, rotation, scale);
+            }
+
+            public static int Size()
+            {
+                return sizeof(float) * 4 * 4;
+            }
+        }
     }
 }

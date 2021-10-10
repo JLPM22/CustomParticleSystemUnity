@@ -6,11 +6,15 @@ namespace CustomParticleSystem
 {
     public class GPUParticleRenderer : ParticleRenderer
     {
+        private Bounds Bounds = new Bounds(Vector3.zero, 10000 * Vector3.one);
+        private ComputeBuffer InstancesBuffer;
+        private ComputeBuffer ArgsBuffer;
+
         public GPUParticleRenderer(Mesh mesh, Material material) : base(mesh, material) { }
 
         public override void Render()
         {
-            throw new System.NotImplementedException();
+            Graphics.DrawMeshInstancedIndirect(Mesh, 0, Material, Bounds, ArgsBuffer);
         }
 
         public override void SetMaximumParticles(int maxParticles)
