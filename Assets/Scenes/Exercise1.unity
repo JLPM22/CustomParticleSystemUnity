@@ -629,7 +629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
@@ -794,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
@@ -907,7 +907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 452656492245404484, guid: fd847fcc3583e4d4799916444cf72113, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4712821946876715630, guid: fd847fcc3583e4d4799916444cf72113, type: 3}
       propertyPath: m_RootOrder
@@ -968,7 +968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377639, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_RootOrder
@@ -1117,6 +1117,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
+      propertyPath: ExecutionMethod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleBouncing
       value: 0.8
       objectReference: {fileID: 0}
@@ -1138,7 +1142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionExplosionSpeed
-      value: 1000
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: MaximumNumberParticles

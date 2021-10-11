@@ -21,7 +21,7 @@ namespace CustomParticleSystem
         public abstract void SolveCollisions(Obstacle[] obstacles, float deltaTime);
         public abstract void SpawnParticle(ParticleSpawner spawner);
         public abstract void SetMaximumParticles(int maxParticles);
-        public abstract void SetRadius(float radius);
+        public abstract void SetProperties(float mass, float radius, float bouncing);
         public abstract void Release();
 
         protected struct InstanceData

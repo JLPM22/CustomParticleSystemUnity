@@ -66,7 +66,7 @@ namespace CustomParticleSystem
                     break;
             }
             ParticleRenderer.SetMaximumParticles(MaximumNumberParticles);
-            ParticleRenderer.SetRadius(ParticleRadius);
+            ParticleRenderer.SetProperties(ParticleMass, ParticleRadius, ParticleBouncing);
             // Application framerate
             Application.targetFrameRate = -1;
         }
@@ -106,9 +106,7 @@ namespace CustomParticleSystem
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
-            Particle.Mass = ParticleMass;
-            Particle.Radius = ParticleRadius;
-            Particle.Bouncing = ParticleBouncing;
+            ParticleRenderer.SetProperties(ParticleMass, ParticleRadius, ParticleBouncing);
         }
 
         private void OnDestroy()

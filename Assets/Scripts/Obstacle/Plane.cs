@@ -6,8 +6,8 @@ namespace CustomParticleSystem
 {
     public class Plane : Obstacle
     {
-        private Vector3 Normal;
-        private float D; // ax + by + cz + D = 0
+        public Vector3 Normal { get; private set; }
+        public float D { get; private set; } // ax + by + cz + D = 0
 
         private void Update()
         {

@@ -14,7 +14,6 @@ namespace CustomParticleSystem
         private ComputeBuffer ArgsBuffer;
         private InstanceData[] InstancesData;
         private int MaximumParticles;
-        private Vector3 Scale = Vector3.one;
 
         public CPUParticleRenderer(Mesh mesh, Material material) : base(mesh, material) { }
 
@@ -26,9 +25,11 @@ namespace CustomParticleSystem
             UpdateParticlesList();
         }
 
-        public override void SetRadius(float radius)
+        public override void SetProperties(float mass, float radius, float bouncing)
         {
-            Scale = new Vector3(radius * 2, radius * 2, radius * 2);
+            Particle.Mass = mass;
+            Particle.Radius = radius;
+            Particle.Bouncing = bouncing;
         }
 
         private void InitBuffers()
@@ -68,7 +69,7 @@ namespace CustomParticleSystem
             {
                 if (Particles[i].LifeTime > 0)
                 {
-                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, Scale);
+                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, new Vector3(Particle.Radius, Particle.Radius, Particle.Radius));
                 }
                 else
                 {

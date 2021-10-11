@@ -1,0 +1,106 @@
+#pragma kernel SolveMovement
+#pragma kernel SolveCollisionsPlanes
+#pragma kernel UpdateInstances
+
+struct InstanceData
+{
+    float4x4 TRSMatrix;
+};
+
+struct Particle
+{
+    float3 Position;
+    float3 Velocity;
+    float3 PreviousPosition;
+    float3 PreviousVelocity;
+    float3 Force;
+    float Lifetime;  
+};
+
+RWStructuredBuffer<Particle> Particles;
+RWStructuredBuffer<InstanceData> Instances;
+
+float Mass;
+float Radius;
+float Bouncing;
+float KVerlet;
+
+float DeltaTime;
+
+[numthreads(64,1,1)]
+void SolveMovement (uint3 id : SV_DispatchThreadID)
+{
+    Particle particle = Particles[id.x];
+    if (particle.Lifetime > 0.0f)
+    {
+        float3 previousPreviousPosition = particle.PreviousPosition;
+        particle.PreviousPosition = particle.Position;
+        particle.PreviousVelocity = particle.Velocity;
+        particle.Position = particle.PreviousPosition + KVerlet * (particle.PreviousPosition - previousPreviousPosition) + ((DeltaTime * DeltaTime) * particle.Force) / Mass;
+        particle.Velocity = (particle.Position - particle.PreviousPosition) / DeltaTime;
+        particle.Lifetime -= DeltaTime;
+        Particles[id.x] = particle;
+    }
+}
+
+struct Plane
+{
+    float3 Normal;
+    float D;
+    float Friction;
+};
+
+StructuredBuffer<Plane> Planes;
+int NumberPlanes;
+
+[numthreads(64,1,1)]
+void SolveCollisionsPlanes (uint3 id : SV_DispatchThreadID)
+{
+    Particle particle = Particles[id.x];
+    if (particle.Lifetime > 0.0f)
+    {
+        for (int i = 0; i < NumberPlanes; i++)
+        {
+            Plane plane = Planes[i];
+            float sign = dot(particle.Position - plane.Normal * Radius, plane.Normal) + plane.D;
+            sign *= dot(particle.PreviousPosition - plane.Normal * Radius, plane.Normal) + plane.D;
+            if (sign <= 0)
+            {
+                float dotVN = dot(particle.Velocity, plane.Normal);
+
+                // Friction
+                float3 velocityNormal = dotVN * plane.Normal;
+                float3 velocityTangent = particle.Velocity - velocityNormal;
+
+                // Elastic collision
+                particle.Velocity = particle.Velocity - (1 + Bouncing) * velocityNormal;
+
+                // Apply friction
+                particle.Velocity = particle.Velocity - plane.Friction * velocityTangent;
+
+                // Update position
+                particle.Position = particle.Position - (1 + Bouncing) * (dot(particle.Position - plane.Normal * Radius, plane.Normal) + plane.D) * plane.Normal;
+                particle.PreviousPosition = particle.Position - particle.Velocity * DeltaTime;
+            }
+        }
+        Particles[id.x] = particle;
+    }
+}
+
+[numthreads(64,1,1)]
+void UpdateInstances (uint3 id : SV_DispatchThreadID)
+{
+    Particle particle = Particles[id.x];
+    float lifetime = 1.0f - step(0.0f, -particle.Lifetime); // -particle.Lifetime >= 0.0f
+    float3 t = particle.Position * lifetime;
+    float s = Radius * lifetime;
+    float4x4 trsMatrix = {
+                        s,0.f,0.f,t.x,
+                        0.f,s,0.f,t.y,
+                        0.f,0.f,s,t.z,
+                        0.f,0.f,0.f,lifetime
+                        };
+    InstanceData instance;
+    instance.TRSMatrix = trsMatrix;
+    Instances[id.x] = instance;
+}
