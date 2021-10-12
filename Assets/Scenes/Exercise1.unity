@@ -1098,7 +1098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionRate
-      value: 5
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleMesh
@@ -1106,7 +1106,7 @@ PrefabInstance:
       objectReference: {fileID: 289301614986012343, guid: 4b41fd829dc9998469fadefc06f33cfa, type: 3}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionShape
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleRadius
@@ -1118,7 +1118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ExecutionMethod
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleBouncing
@@ -1146,7 +1146,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: MaximumNumberParticles
-      value: 10000
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739069, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: m_Name

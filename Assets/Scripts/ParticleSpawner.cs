@@ -25,6 +25,7 @@ namespace CustomParticleSystem
         public int MaximumNumberParticles;
         public float EmissionRate = 1.0f;
         public Method ExecutionMethod = Method.CPU_Single_Thread;
+        public bool Shadows;
         public Shape EmissionShape = Shape.Point;
         public float EmissionExplosionSpeed = 10.0f;
         public float EmissionFountainSpeed = 10.0f;
@@ -37,6 +38,8 @@ namespace CustomParticleSystem
 
         private float AccumulatedDeltaTime = 0.0f;
         private int LastMaximumNumberParticles;
+        private float LastEmissionRate;
+        private float LastParticleLifeTime;
         private float AccumulatedTimeEmission = 0.0f;
 
         private ParticleRenderer ParticleRenderer;
@@ -45,6 +48,8 @@ namespace CustomParticleSystem
         {
             // Init variables
             LastMaximumNumberParticles = MaximumNumberParticles;
+            LastEmissionRate = EmissionRate;
+            LastParticleLifeTime = ParticleLifeTime;
             // Wait one frame for the Destroy() calls to be done (objects bad inited)
             enabled = false;
             yield return null;
@@ -74,10 +79,15 @@ namespace CustomParticleSystem
         private void Update()
         {
             // Check Maximum Number of Particles
-            if (MaximumNumberParticles != LastMaximumNumberParticles)
+            if (MaximumNumberParticles != LastMaximumNumberParticles ||
+                EmissionRate != LastEmissionRate ||
+                ParticleLifeTime != LastParticleLifeTime)
             {
-                ParticleRenderer.SetMaximumParticles(MaximumNumberParticles);
+                int maximumNumberParticles = Mathf.Min(MaximumNumberParticles, Mathf.CeilToInt(EmissionRate * ParticleLifeTime));
+                ParticleRenderer.SetMaximumParticles(maximumNumberParticles);
                 LastMaximumNumberParticles = MaximumNumberParticles;
+                LastEmissionRate = EmissionRate;
+                LastParticleLifeTime = ParticleLifeTime;
             }
 
             // Emit particles
@@ -102,7 +112,7 @@ namespace CustomParticleSystem
 
             // Render
             ParticleRenderer.UpdateInstances();
-            ParticleRenderer.Render();
+            ParticleRenderer.Render(Shadows);
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;

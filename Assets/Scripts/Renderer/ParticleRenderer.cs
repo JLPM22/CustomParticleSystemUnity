@@ -16,7 +16,7 @@ namespace CustomParticleSystem
         }
 
         public abstract void UpdateInstances();
-        public abstract void Render();
+        public abstract void Render(bool shadows);
         public abstract void SolveMovement(Solver solver, float deltaTime, float kVerlet);
         public abstract void SolveCollisions(Obstacle[] obstacles, float deltaTime);
         public abstract void SpawnParticle(ParticleSpawner spawner);

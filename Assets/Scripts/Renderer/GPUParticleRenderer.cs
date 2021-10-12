@@ -39,9 +39,15 @@ namespace CustomParticleSystem
             NumberPlanesKey = Shader.PropertyToID("NumberPlanes");
         }
 
-        public override void Render()
+        public override void Render(bool shadows)
         {
-            Graphics.DrawMeshInstancedIndirect(Mesh, 0, Material, Bounds, ArgsBuffer);
+            Graphics.DrawMeshInstancedIndirect(mesh: Mesh,
+                                               submeshIndex: 0,
+                                               material: Material,
+                                               bounds: Bounds,
+                                               bufferWithArgs: ArgsBuffer,
+                                               castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
+                                               receiveShadows: shadows);
         }
 
         public override void SetMaximumParticles(int maxParticles)

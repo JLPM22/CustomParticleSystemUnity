@@ -93,7 +93,7 @@ void UpdateInstances (uint3 id : SV_DispatchThreadID)
     Particle particle = Particles[id.x];
     float lifetime = 1.0f - step(0.0f, -particle.Lifetime); // -particle.Lifetime >= 0.0f
     float3 t = particle.Position * lifetime;
-    float s = Radius * lifetime;
+    float s = Radius * 2.0f * lifetime;
     float4x4 trsMatrix = {
                         s,0.f,0.f,t.x,
                         0.f,s,0.f,t.y,

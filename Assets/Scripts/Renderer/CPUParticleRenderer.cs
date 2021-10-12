@@ -69,7 +69,7 @@ namespace CustomParticleSystem
             {
                 if (Particles[i].LifeTime > 0)
                 {
-                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, new Vector3(Particle.Radius, Particle.Radius, Particle.Radius));
+                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, new Vector3(Particle.Radius * 2.0f, Particle.Radius * 2.0f, Particle.Radius * 2.0f));
                 }
                 else
                 {
@@ -79,9 +79,15 @@ namespace CustomParticleSystem
             InstancesBuffer.SetData(InstancesData);
         }
 
-        public override void Render()
+        public override void Render(bool shadows)
         {
-            Graphics.DrawMeshInstancedIndirect(Mesh, 0, Material, Bounds, ArgsBuffer);
+            Graphics.DrawMeshInstancedIndirect(mesh: Mesh,
+                                               submeshIndex: 0,
+                                               material: Material,
+                                               bounds: Bounds,
+                                               bufferWithArgs: ArgsBuffer,
+                                               castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
+                                               receiveShadows: shadows);
         }
 
         public override void SolveMovement(Solver solver, float deltaTime, float kVerlet)
@@ -118,14 +124,12 @@ namespace CustomParticleSystem
                 Particle p = Particles[i];
                 if (p.LifeTime > 0.0f)
                 {
-                    bool found = false;
-                    for (int j = 0; j < obstacles.Length && !found; j++)
+                    for (int j = 0; j < obstacles.Length; j++)
                     {
                         Obstacle o = obstacles[j];
                         if (o.HasCollisionParticle(p))
                         {
                             o.CorrectCollisionParticle(p, deltaTime);
-                            found = true;
                         }
                     }
                 }

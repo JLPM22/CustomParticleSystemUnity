@@ -26,6 +26,11 @@ public class ParticleSpawnerEditor : Editor
         {
             ps.ExecutionMethod = (ParticleSpawner.Method)EditorGUILayout.EnumPopup("Execution Method", ps.ExecutionMethod);
         }
+        else
+        {
+            EditorGUILayout.LabelField("Execution Method: " + ps.ExecutionMethod.ToString());
+        }
+        ps.Shadows = EditorGUILayout.Toggle("Shadows", ps.Shadows);
         EditorGUILayout.Space(space);
 
         ps.EmissionShape = (ParticleSpawner.Shape)EditorGUILayout.EnumPopup("Emission Shape", ps.EmissionShape);
@@ -70,6 +75,10 @@ public class ParticleSpawnerEditor : Editor
         ps.Gravity = EditorGUILayout.FloatField("Gravity", ps.Gravity);
         ps.MaximumNumberParticles = EditorGUILayout.IntField("Max Particles", ps.MaximumNumberParticles);
         if (ps.MaximumNumberParticles < 1) ps.MaximumNumberParticles = 1;
+        if (ps.ExecutionMethod == ParticleSpawner.Method.GPU)
+        {
+            ps.MaximumNumberParticles = ps.MaximumNumberParticles = ((ps.MaximumNumberParticles + 63) / 64) * 64; // make the number multiple of 64
+        }
         EditorGUILayout.Space(space);
 
         ps.ParticleLifeTime = EditorGUILayout.FloatField("Particle Life Time", ps.ParticleLifeTime);
