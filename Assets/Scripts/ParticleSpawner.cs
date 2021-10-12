@@ -77,6 +77,7 @@ namespace CustomParticleSystem
             ParticleMaterial.SetFloat(MaxLifetimeKey, ParticleLifeTime);
             // Application framerate
             Application.targetFrameRate = -1;
+            QualitySettings.vSyncCount = 0;
         }
 
         private void Update()
