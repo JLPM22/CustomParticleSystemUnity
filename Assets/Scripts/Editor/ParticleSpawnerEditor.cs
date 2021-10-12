@@ -55,7 +55,7 @@ public class ParticleSpawnerEditor : Editor
         }
         EditorGUILayout.Space(space);
 
-        if (ps.ExecutionMethod != ParticleSpawner.Method.GPU)
+        if (ps.ExecutionMethod == ParticleSpawner.Method.CPU_Single_Thread)
         {
             ps.ParticleSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ps.ParticleSolver);
         }

@@ -64,13 +64,13 @@ namespace CustomParticleSystem
                     ParticleRenderer = new CPUParticleRenderer(ParticleMesh, ParticleMaterial);
                     break;
                 case Method.CPU_Multi_Thread:
-                    throw new NotImplementedException();
+                    ParticleRenderer = new BurstParticleRenderer(ParticleMesh, ParticleMaterial);
                     break;
                 case Method.GPU:
                     ParticleRenderer = new GPUParticleRenderer(ParticleMesh, ParticleMaterial);
                     break;
             }
-            ParticleRenderer.SetMaximumParticles(MaximumNumberParticles);
+            UpdateMaximumParticles();
             ParticleRenderer.SetProperties(ParticleMass, ParticleRadius, ParticleBouncing);
             // Application framerate
             Application.targetFrameRate = -1;
@@ -83,8 +83,7 @@ namespace CustomParticleSystem
                 EmissionRate != LastEmissionRate ||
                 ParticleLifeTime != LastParticleLifeTime)
             {
-                int maximumNumberParticles = Mathf.Min(MaximumNumberParticles, Mathf.CeilToInt(EmissionRate * ParticleLifeTime));
-                ParticleRenderer.SetMaximumParticles(maximumNumberParticles);
+                UpdateMaximumParticles();
                 LastMaximumNumberParticles = MaximumNumberParticles;
                 LastEmissionRate = EmissionRate;
                 LastParticleLifeTime = ParticleLifeTime;
@@ -117,6 +116,12 @@ namespace CustomParticleSystem
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
             ParticleRenderer.SetProperties(ParticleMass, ParticleRadius, ParticleBouncing);
+        }
+
+        private void UpdateMaximumParticles()
+        {
+            int maximumNumberParticles = Mathf.Min(MaximumNumberParticles, Mathf.CeilToInt(EmissionRate * ParticleLifeTime));
+            ParticleRenderer.SetMaximumParticles(maximumNumberParticles);
         }
 
         private void OnDestroy()

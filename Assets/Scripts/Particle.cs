@@ -89,7 +89,7 @@ namespace CustomParticleSystem
         private void UpdateLifeTime(float deltaTime)
         {
             LifeTime -= deltaTime;
-            if (LifeTime <= 0.0f) LifeTime = 0.0f;
+            if (LifeTime < 0.0f) LifeTime = 0.0f;
         }
     }
 
