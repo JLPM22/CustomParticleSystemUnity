@@ -27,20 +27,23 @@ namespace CustomParticleSystem
         protected struct InstanceData
         {
             public Matrix4x4 TRSMatrix;
+            public float Lifetime;
 
-            public InstanceData(Matrix4x4 tRSMatrix)
+            public InstanceData(Matrix4x4 tRSMatrix, float lifetime)
             {
                 TRSMatrix = tRSMatrix;
+                Lifetime = lifetime;
             }
 
-            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale)
+            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale, float lifetime)
             {
                 TRSMatrix = Matrix4x4.TRS(position, rotation, scale);
+                Lifetime = lifetime;
             }
 
             public static int Size()
             {
-                return sizeof(float) * 4 * 4;
+                return sizeof(float) * (4 * 4 + 1);
             }
         }
     }

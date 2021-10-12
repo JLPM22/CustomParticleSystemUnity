@@ -3,9 +3,11 @@
 
 struct InstanceData {
 	float4x4 m;
+	float lifetime;
 };
 
 StructuredBuffer<InstanceData> _PerInstanceData;
+float _MaxLifetime;
 
 #if UNITY_ANY_INSTANCING_ENABLED
 
@@ -31,6 +33,16 @@ void Instancing_float(float3 Position, out float3 Out) {
     InstanceData data = _PerInstanceData[unity_InstanceID];
     Out = mul(data.m, float4(Position.x, Position.y, Position.z, 1.0f)).xyz;
     #endif
+}
+
+void ColorLifetime_float(float4 ColorA, float4 ColorB, out float4 Out, out float alpha) {
+	Out = ColorA;
+	alpha = 1.0f;
+	#if UNITY_ANY_INSTANCING_ENABLED
+	float t = _PerInstanceData[unity_InstanceID].lifetime / _MaxLifetime;
+	Out = lerp(ColorA, ColorB, 1.0f - t);
+	alpha = smoothstep(0.0f, 1.0f, t);
+	#endif
 }
 
 #endif

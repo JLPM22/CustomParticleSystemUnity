@@ -7,6 +7,7 @@
 struct InstanceData
 {
     float4x4 TRSMatrix;
+    float Lifetime;
 };
 
 struct Particle
@@ -244,5 +245,6 @@ void UpdateInstances (uint3 id : SV_DispatchThreadID)
                         };
     InstanceData instance;
     instance.TRSMatrix = trsMatrix;
+    instance.Lifetime = p.Lifetime;
     Instances[id.x] = instance;
 }

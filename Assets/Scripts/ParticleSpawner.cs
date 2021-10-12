@@ -43,6 +43,7 @@ namespace CustomParticleSystem
         private float AccumulatedTimeEmission = 0.0f;
 
         private ParticleRenderer ParticleRenderer;
+        private int MaxLifetimeKey;
 
         private IEnumerator Start()
         {
@@ -50,6 +51,7 @@ namespace CustomParticleSystem
             LastMaximumNumberParticles = MaximumNumberParticles;
             LastEmissionRate = EmissionRate;
             LastParticleLifeTime = ParticleLifeTime;
+            MaxLifetimeKey = Shader.PropertyToID("_MaxLifetime");
             // Wait one frame for the Destroy() calls to be done (objects bad inited)
             enabled = false;
             yield return null;
@@ -72,6 +74,7 @@ namespace CustomParticleSystem
             }
             UpdateMaximumParticles();
             ParticleRenderer.SetProperties(ParticleMass, ParticleRadius, ParticleBouncing);
+            ParticleMaterial.SetFloat(MaxLifetimeKey, ParticleLifeTime);
             // Application framerate
             Application.targetFrameRate = -1;
         }

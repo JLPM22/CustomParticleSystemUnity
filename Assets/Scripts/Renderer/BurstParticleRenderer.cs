@@ -17,6 +17,8 @@ namespace CustomParticleSystem
     {
         private NativeArray<BurstParticle> Particles;
         private NativeArray<BurstPlane> Planes;
+        private NativeArray<BurstSphere> Spheres;
+        private NativeArray<BurstTriangle> Triangles;
 
         private Bounds Bounds = new Bounds(Vector3.zero, 10000 * Vector3.one);
         private ComputeBuffer InstancesBuffer;
@@ -65,11 +67,14 @@ namespace CustomParticleSystem
             {
                 if (Particles[i].LifeTime > 0)
                 {
-                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, new Vector3(Particle.Radius * 2.0f, Particle.Radius * 2.0f, Particle.Radius * 2.0f));
+                    InstancesData[i] = new InstanceData(Particles[i].Position,
+                                                        Quaternion.identity,
+                                                        new Vector3(Particle.Radius * 2.0f, Particle.Radius * 2.0f, Particle.Radius * 2.0f),
+                                                        Particles[i].LifeTime);
                 }
                 else
                 {
-                    InstancesData[i] = new InstanceData(Vector3.zero, Quaternion.identity, Vector3.zero);
+                    InstancesData[i] = new InstanceData(Vector3.zero, Quaternion.identity, Vector3.zero, 0.0f);
                 }
             }
             InstancesBuffer.SetData(InstancesData);
@@ -105,9 +110,11 @@ namespace CustomParticleSystem
             UpdateObstaclesArray(obstacles);
 
             var job = new SolveCollisionsBurst
-            { 
+            {
                 Particles = Particles,
                 Planes = Planes,
+                Spheres = Spheres,
+                Triangles = Triangles,
                 DeltaTime = deltaTime,
                 ParticleBouncing = Particle.Bouncing,
                 ParticleRadius = Particle.Radius
@@ -115,6 +122,7 @@ namespace CustomParticleSystem
 
             JobHandle handle = job.Schedule(Particles.Length, 64);
             handle.Complete(); // ensure job has finished
+            LastIndexSearchAvailable = 0;
         }
 
         private void UpdateObstaclesArray(Obstacle[] obstacles)
@@ -132,6 +140,8 @@ namespace CustomParticleSystem
                     else if (o is Cube) o.GetComponent<MeshRenderer>().enabled = false;
                 }
                 Planes = new NativeArray<BurstPlane>(planeCount, Allocator.Persistent);
+                Spheres = new NativeArray<BurstSphere>(sphereCount, Allocator.Persistent);
+                Triangles = new NativeArray<BurstTriangle>(triangleCount, Allocator.Persistent);
                 ObstaclesInit = true;
             }
             int planeIndex = 0;
@@ -144,6 +154,18 @@ namespace CustomParticleSystem
                     Plane p = o as Plane;
                     Planes[planeIndex] = new BurstPlane(p.Normal, p.D, p.Friction);
                     planeIndex += 1;
+                }
+                else if (o is Sphere)
+                {
+                    Sphere s = o as Sphere;
+                    Spheres[sphereIndex] = new BurstSphere(s.Center, s.Radius, s.Friction);
+                    sphereIndex += 1;
+                }
+                else if (o is Triangle)
+                {
+                    Triangle t = o as Triangle;
+                    Triangles[triangleIndex] = new BurstTriangle(t.Normal, t.D, t.V1, t.V2, t.V3, t.Friction);
+                    triangleIndex += 1;
                 }
             }
         }
@@ -219,6 +241,8 @@ namespace CustomParticleSystem
             ReleaseBuffers();
             if (Particles.IsCreated) Particles.Dispose();
             if (Planes.IsCreated) Planes.Dispose();
+            if (Spheres.IsCreated) Spheres.Dispose();
+            if (Triangles.IsCreated) Triangles.Dispose();
         }
 
         private struct BurstParticle
@@ -255,6 +279,38 @@ namespace CustomParticleSystem
             }
         }
 
+        private struct BurstSphere
+        {
+            public float3 Center;
+            public float Radius;
+            public float Friction;
+
+            public BurstSphere(float3 center, float radius, float friction)
+            {
+                Center = center;
+                Radius = radius;
+                Friction = friction;
+            }
+        }
+
+        private struct BurstTriangle
+        {
+            public float3 Normal;
+            public float D;
+            public float3 V1, V2, V3;
+            public float Friction;
+
+            public BurstTriangle(float3 normal, float d, float3 v1, float3 v2, float3 v3, float friction)
+            {
+                Normal = normal;
+                D = d;
+                V1 = v1;
+                V2 = v2;
+                V3 = v3;
+                Friction = friction;
+            }
+        }
+
         [BurstCompile]
         private struct VerletSolver : IJobParallelFor
         {
@@ -285,6 +341,8 @@ namespace CustomParticleSystem
         {
             public NativeArray<BurstParticle> Particles;
             [ReadOnly] public NativeArray<BurstPlane> Planes;
+            [ReadOnly] public NativeArray<BurstSphere> Spheres;
+            [ReadOnly] public NativeArray<BurstTriangle> Triangles;
             public float DeltaTime;
             public float ParticleRadius;
             public float ParticleBouncing;
@@ -306,7 +364,27 @@ namespace CustomParticleSystem
                         }
                     }
                     // Spheres
+                    for (int j = 0; j < Spheres.Length; ++j)
+                    {
+                        BurstSphere sphere = Spheres[j];
+                        float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius) - sphere.Center;
+                        if (dot(dir, dir) < sphere.Radius * sphere.Radius)
+                        {
+                            p = CollisionSphereParticle(p, sphere);
+                            collision = true;
+                        }
+                    }
                     // Triangles
+                    for (int j = 0; j < Triangles.Length; ++j)
+                    {
+                        BurstTriangle triangle = Triangles[j];
+                        if (IsCrossingPlane(p, triangle.Normal, triangle.D) &&
+                            OnTriangleParticle(p, triangle.V1, triangle.V2, triangle.V3, triangle.Normal, triangle.D))
+                        {
+                            p = CollisionPlaneParticle(p, triangle.Normal, triangle.D, triangle.Friction);
+                            collision = true;
+                        }
+                    }
                     if (collision) p.PreviousPosition = p.Position - p.Velocity * DeltaTime;
                     Particles[index] = p;
                 }
@@ -339,6 +417,51 @@ namespace CustomParticleSystem
                 p.Position -= (1 + ParticleBouncing) * (dot(p.Position - N * ParticleRadius, N) + d) * N;
 
                 return p;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private BurstParticle CollisionSphereParticle(BurstParticle p, BurstSphere sphere)
+            {
+                float3 previousPosition = p.PreviousPosition + normalize(sphere.Center - p.PreviousPosition) * ParticleRadius;
+                // Segment-Sphere intersection
+                float alpha = dot(p.PreviousVelocity, p.PreviousVelocity);
+                float beta = dot(2 * p.PreviousVelocity, (previousPosition - sphere.Center));
+                float gamma = dot(sphere.Center, sphere.Center) + dot(previousPosition, previousPosition) - dot(sphere.Center, 2 * previousPosition) - sphere.Radius * sphere.Radius;
+                // Solve Second order equation
+                float num = beta * beta - 4 * alpha * gamma;
+                if (num < 0)
+                {
+                    // No intersection
+                    return p;
+                }
+                float sqrtVar = sqrt(num);
+                float s1 = (-beta + sqrtVar) / (2 * alpha);
+                float s2 = (-beta - sqrtVar) / (2 * alpha);
+                float s = s1 >= 0 && s1 <= DeltaTime ? s1 : s2;
+                // Intersection point with the sphere
+                float3 P = previousPosition + s * p.PreviousVelocity;
+                // Define tangent plane on P
+                float3 N = normalize(P - sphere.Center);
+                // Apply collision plane-particle
+                return CollisionPlaneParticle(p, N, -dot(N, P), sphere.Friction);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool OnTriangleParticle(BurstParticle p, float3 v1, float3 v2, float3 v3, float3 N, float d)
+            {
+                float3 previousPosition = p.PreviousPosition - N * ParticleRadius;
+                float3 line = (p.Position - N * ParticleRadius) - previousPosition;
+                float t = (-d - dot(N, previousPosition)) / dot(N, line);
+                if (t < 0 || t > 1) return false;
+                float3 intersectionPoint = previousPosition + line * t;
+                const float epsilon = 0.0001f;
+                return Mathf.Abs(Area(intersectionPoint, v2, v3) + Area(v1, intersectionPoint, v3) + Area(v1, v2, intersectionPoint) - Area(v1, v2, v3)) < epsilon;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private float Area(Vector3 vi, Vector3 vj, Vector3 vk)
+            {
+                return 0.5f * length(cross(vj - vi, vk - vi));
             }
         }
     }

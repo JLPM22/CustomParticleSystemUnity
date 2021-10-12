@@ -69,11 +69,14 @@ namespace CustomParticleSystem
             {
                 if (Particles[i].LifeTime > 0)
                 {
-                    InstancesData[i] = new InstanceData(Particles[i].Position, Quaternion.identity, new Vector3(Particle.Radius * 2.0f, Particle.Radius * 2.0f, Particle.Radius * 2.0f));
+                    InstancesData[i] = new InstanceData(Particles[i].Position,
+                                                        Quaternion.identity,
+                                                        new Vector3(Particle.Radius * 2.0f, Particle.Radius * 2.0f, Particle.Radius * 2.0f),
+                                                        Particles[i].LifeTime);
                 }
                 else
                 {
-                    InstancesData[i] = new InstanceData(Vector3.zero, Quaternion.identity, Vector3.zero);
+                    InstancesData[i] = new InstanceData(Vector3.zero, Quaternion.identity, Vector3.zero, 0.0f);
                 }
             }
             InstancesBuffer.SetData(InstancesData);
