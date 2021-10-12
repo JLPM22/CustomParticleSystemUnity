@@ -66,9 +66,13 @@ namespace CustomParticleSystem
             }
         }
 
-        public void SetPosition(Vector3 newPos, float deltaTime)
+        public void SetPosition(Vector3 newPos)
         {
             Position = newPos;
+        }
+
+        public void SetPreviousPosition(float deltaTime)
+        {
             PreviousPosition = Position - Velocity * deltaTime;
         }
 

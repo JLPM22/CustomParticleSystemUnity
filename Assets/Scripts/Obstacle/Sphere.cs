@@ -6,8 +6,8 @@ namespace CustomParticleSystem
 {
     public class Sphere : Obstacle
     {
-        private Vector3 Center;
-        private float Radius;
+        public Vector3 Center { get; private set; }
+        public float Radius { get; private set; }
 
         private void Update()
         {

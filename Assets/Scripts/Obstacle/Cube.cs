@@ -6,8 +6,8 @@ namespace CustomParticleSystem
 {
     public class Cube : Obstacle
     {
-        private Vector3 N1, N2, N3, N4, N5, N6;
-        private float D1, D2, D3, D4, D5, D6;
+        public Vector3 N1, N2, N3, N4, N5, N6;
+        public float D1, D2, D3, D4, D5, D6;
 
         private Vector4[][] TrianglesLocalPos;
 

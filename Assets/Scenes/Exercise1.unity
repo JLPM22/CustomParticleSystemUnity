@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -200,8 +200,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 554268001}
-  m_LocalRotation: {x: -0.16453338, y: 0.016862752, z: -0.002813038, w: -0.9862234}
-  m_LocalPosition: {x: -0.3448782, y: 3.2799592, z: -7.12}
+  m_LocalRotation: {x: 0.22603017, y: 0.0014886502, z: -0.00022693072, w: 0.9741192}
+  m_LocalPosition: {x: -0.2875952, y: 6.1687384, z: -10.858009}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -629,7 +629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
@@ -794,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3078553870552697339, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b83a672761a25142b97dd3bb127a2a1, type: 3}
@@ -907,7 +907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 452656492245404484, guid: fd847fcc3583e4d4799916444cf72113, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4712821946876715630, guid: fd847fcc3583e4d4799916444cf72113, type: 3}
       propertyPath: m_RootOrder
@@ -968,7 +968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377639, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_RootOrder
@@ -976,15 +976,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.32
+      value: -1.94
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.59
+      value: -2.29
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377644, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1098,7 +1098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionRate
-      value: 100
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleMesh
@@ -1106,7 +1106,7 @@ PrefabInstance:
       objectReference: {fileID: 289301614986012343, guid: 4b41fd829dc9998469fadefc06f33cfa, type: 3}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionShape
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleRadius
@@ -1118,7 +1118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ExecutionMethod
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleBouncing
@@ -1146,7 +1146,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: MaximumNumberParticles
-      value: 1000
+      value: 10048
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739069, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: m_Name

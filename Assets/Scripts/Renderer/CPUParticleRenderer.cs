@@ -124,14 +124,17 @@ namespace CustomParticleSystem
                 Particle p = Particles[i];
                 if (p.LifeTime > 0.0f)
                 {
+                    bool collision = false;
                     for (int j = 0; j < obstacles.Length; j++)
                     {
                         Obstacle o = obstacles[j];
                         if (o.HasCollisionParticle(p))
                         {
                             o.CorrectCollisionParticle(p, deltaTime);
+                            collision = true;
                         }
                     }
+                    if (collision) p.SetPreviousPosition(deltaTime);
                 }
             }
         }

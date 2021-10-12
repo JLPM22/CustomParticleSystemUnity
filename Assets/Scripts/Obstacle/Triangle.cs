@@ -6,11 +6,13 @@ namespace CustomParticleSystem
 {
     public class Triangle : Obstacle
     {
-        private Vector3 Normal;
-        private float D; // ax + by + cz + D = 0
+        public Vector3 Normal { get; private set; }
+        public float D { get; private set; } // ax + by + cz + D = 0
 
         private Vector4[] VerticesLocalPos;
-        private Vector3 V1, V2, V3;
+        public Vector3 V1 { get; private set; }
+        public Vector3 V2 { get; private set; }
+        public Vector3 V3 { get; private set; }
 
         private void Update()
         {

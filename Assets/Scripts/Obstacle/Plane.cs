@@ -40,7 +40,7 @@ namespace CustomParticleSystem
             p.SetVelocity(p.Velocity - friction * velocityTangent);
 
             // Update position
-            p.SetPosition(p.Position - (1 + Particle.Bouncing) * (Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d) * N, deltaTime);
+            p.SetPosition(p.Position - (1 + Particle.Bouncing) * (Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d) * N);
         }
 
         public static bool IsCrossingPlane(Particle p, Vector3 N, float d)

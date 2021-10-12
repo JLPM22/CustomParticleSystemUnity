@@ -1,5 +1,7 @@
 #pragma kernel SolveMovement
 #pragma kernel SolveCollisionsPlanes
+#pragma kernel SolveCollisionsSpheres
+#pragma kernel SolveCollisionsTriangles
 #pragma kernel UpdateInstances
 
 struct InstanceData
@@ -19,6 +21,7 @@ struct Particle
 
 RWStructuredBuffer<Particle> Particles;
 RWStructuredBuffer<InstanceData> Instances;
+RWStructuredBuffer<int> Collisions;
 
 float Mass;
 float Radius;
@@ -59,12 +62,13 @@ void SolveCollisionsPlanes (uint3 id : SV_DispatchThreadID)
     Particle particle = Particles[id.x];
     if (particle.Lifetime > 0.0f)
     {
+        int collision = 0;
         for (int i = 0; i < NumberPlanes; i++)
         {
             Plane plane = Planes[i];
             float sign = dot(particle.Position - plane.Normal * Radius, plane.Normal) + plane.D;
             sign *= dot(particle.PreviousPosition - plane.Normal * Radius, plane.Normal) + plane.D;
-            if (sign <= 0)
+            if (sign <= 0.0f)
             {
                 float dotVN = dot(particle.Velocity, plane.Normal);
 
@@ -80,19 +84,157 @@ void SolveCollisionsPlanes (uint3 id : SV_DispatchThreadID)
 
                 // Update position
                 particle.Position = particle.Position - (1 + Bouncing) * (dot(particle.Position - plane.Normal * Radius, plane.Normal) + plane.D) * plane.Normal;
-                particle.PreviousPosition = particle.Position - particle.Velocity * DeltaTime;
+                
+                collision = 1;
             }
         }
         Particles[id.x] = particle;
+        Collisions[id.x] = collision;
+    }
+}
+
+struct Sphere
+{
+    float3 Center;
+    float Radius;
+    float Friction;
+};
+
+StructuredBuffer<Sphere> Spheres;
+int NumberSpheres;
+
+[numthreads(64,1,1)]
+void SolveCollisionsSpheres (uint3 id : SV_DispatchThreadID)
+{
+    Particle p = Particles[id.x];
+    if (p.Lifetime > 0.0f)
+    {
+        int collision = 0;
+        for (int i = 0; i < NumberSpheres; i++)
+        {
+            Sphere sphere = Spheres[i];
+            float3 dir = (p.Position + normalize(sphere.Center - p.Position) * Radius) - sphere.Center;
+            if (dot(dir, dir) < sphere.Radius * sphere.Radius)
+            {
+                float3 previousPosition = p.PreviousPosition + normalize(sphere.Center - p.PreviousPosition) * Radius;
+                // Segment-Sphere intersection
+                float alpha = dot(p.PreviousVelocity, p.PreviousVelocity);
+                float beta = dot(2.0f * p.PreviousVelocity, (previousPosition - sphere.Center));
+                float gamma = dot(sphere.Center, sphere.Center) + dot(previousPosition, previousPosition) - dot(sphere.Center, 2.0f * previousPosition) - sphere.Radius * sphere.Radius;
+                // Solve Second order equation
+                float num = beta * beta - 4.0f * alpha * gamma;
+                if (num >= 0)
+                {               
+                    float sqrtvar = sqrt(num);
+                    float s1 = (-beta + sqrtvar) / (2.0f * alpha);
+                    float s2 = (-beta - sqrtvar) / (2.0f * alpha);
+                    int sTest = s1 >= 0 && s1 <= DeltaTime;
+                    float s = s1 * sTest + s2 * (1 -sTest);
+                    // Intersection point with the sphere
+                    float3 P = previousPosition + s * p.PreviousVelocity;
+                    // Define tangent plane on P
+                    float3 N = normalize(P - sphere.Center);
+                    float d = -dot(N, P);
+                    
+                    // Apply collision plane-particle ----
+                    float dotVN = dot(p.Velocity, N);
+
+                    // Friction
+                    float3 velocityNormal = dotVN * N;
+                    float3 velocityTangent = p.Velocity - velocityNormal;
+
+                    // Elastic collision
+                    p.Velocity = p.Velocity - (1 + Bouncing) * velocityNormal;
+
+                    // Apply friction
+                    p.Velocity = p.Velocity - sphere.Friction * velocityTangent;
+
+                    // Update position
+                    p.Position = p.Position - (1 + Bouncing) * (dot(p.Position - N * Radius, N) + d) * N;
+                    
+                    collision = 1;
+                }
+            }
+        }
+        Particles[id.x] = p;
+        Collisions[id.x] = (Collisions[id.x] + collision) && true; // normalize to 1 or 0
+    }
+}
+
+struct Triangle
+{
+    float3 Normal;
+    float D;
+    float Friction;
+    float3 V1, V2, V3;
+};
+
+StructuredBuffer<Triangle> Triangles;
+int NumberTriangles;
+
+inline float AreaTriangle (float3 vi, float3 vj, float3 vk)
+{
+    return 0.5f * length(cross(vj - vi, vk - vi));
+}
+
+[numthreads(64,1,1)]
+void SolveCollisionsTriangles (uint3 id : SV_DispatchThreadID)
+{
+    Particle p = Particles[id.x];
+    if (p.Lifetime > 0.0f)
+    {
+        int collision = 0;
+        for (int i = 0; i < NumberTriangles; i++)
+        {
+            Triangle tri = Triangles[i];
+            // Test if the particle is crossing the plane defined by the triangle
+            float sign = dot(p.Position - tri.Normal * Radius, tri.Normal) + tri.D;
+            sign *= dot(p.PreviousPosition - tri.Normal * Radius, tri.Normal) + tri.D;
+            // Test if the particle is on the triangle
+            float3 previousPosition = p.PreviousPosition - tri.Normal * Radius;
+            float3 lineVar = (p.Position - tri.Normal * Radius) - previousPosition;
+            float t = (-tri.D - dot(tri.Normal, previousPosition)) / dot(tri.Normal, lineVar);
+            float3 intersectionPoint = previousPosition + lineVar * t;
+            float area = abs(AreaTriangle(intersectionPoint, tri.V2, tri.V3) +
+                             AreaTriangle(tri.V1, intersectionPoint, tri.V3) +
+                             AreaTriangle(tri.V1, tri.V2, intersectionPoint) -
+                             AreaTriangle(tri.V1, tri.V2, tri.V3));
+            if (sign <= 0.0f && t >= 0 && t <= 1 && area < 0.0001f)
+            {
+                float dotVN = dot(p.Velocity, tri.Normal);
+
+                // Friction
+                float3 velocityNormal = dotVN * tri.Normal;
+                float3 velocityTangent = p.Velocity - velocityNormal;
+
+                // Elastic collision
+                p.Velocity = p.Velocity - (1 + Bouncing) * velocityNormal;
+
+                // Apply friction
+                p.Velocity = p.Velocity - tri.Friction * velocityTangent;
+
+                // Update position
+                p.Position = p.Position - (1 + Bouncing) * (dot(p.Position - tri.Normal * Radius, tri.Normal) + tri.D) * tri.Normal;
+                
+                collision = 1;
+            }
+        }
+        Particles[id.x] = p;
+        Collisions[id.x] = (Collisions[id.x] + collision) && true; // normalize to 1 or 0
     }
 }
 
 [numthreads(64,1,1)]
 void UpdateInstances (uint3 id : SV_DispatchThreadID)
 {
-    Particle particle = Particles[id.x];
-    float lifetime = 1.0f - step(0.0f, -particle.Lifetime); // -particle.Lifetime >= 0.0f
-    float3 t = particle.Position * lifetime;
+    Particle p = Particles[id.x];
+    // Correct previousPosition after colision
+    int collision = Collisions[id.x];
+    p.PreviousPosition = (p.Position - p.Velocity * DeltaTime) * collision + p.PreviousPosition * (1 - collision);
+    Particles[id.x] = p;
+    // TRS Matrix for GPU Instancing
+    float lifetime = 1.0f - step(0.0f, -p.Lifetime); // -p.Lifetime >= 0.0f
+    float3 t = p.Position * lifetime;
     float s = Radius * 2.0f * lifetime;
     float4x4 trsMatrix = {
                         s,0.f,0.f,t.x,

@@ -9,15 +9,19 @@ namespace CustomParticleSystem
     public class GPUParticleRenderer : ParticleRenderer
     {
         private ComputeShader ComputeShader;
-        private int SolveMovementKernel, SolveCollisionsPlanesKernel, UpdateInstancesKernel;
-        private int ParticlesBufferKey, InstancesBufferKey, PlanesBufferKey;
+        private int SolveMovementKernel, SolveCollisionsPlanesKernel, SolveCollisionsSpheresKernel, SolveCollisionsTrianglesKernel, UpdateInstancesKernel;
+        private int ParticlesBufferKey, InstancesBufferKey, CollisionsBufferKey;
+        private int PlanesBufferKey, SpheresBufferKey, TrianglesBufferKey;
         private int MassKey, RadiusKey, BouncingKey, KVerletKey, DeltaTimeKey;
-        private int NumberPlanesKey;
+        private int NumberPlanesKey, NumberSpheresKey, NumberTrianglesKey;
         private Bounds Bounds = new Bounds(Vector3.zero, 10000 * Vector3.one);
         private ComputeBuffer ParticlesBuffer;
         private ComputeBuffer InstancesBuffer;
+        private ComputeBuffer CollisionsBuffer;
         private ComputeBuffer ArgsBuffer;
         private ComputeBuffer PlanesBuffer;
+        private ComputeBuffer SpheresBuffer;
+        private ComputeBuffer TrianglesBuffer;
 
         private float[] Lifetimes;
         private int MaximumParticles;
@@ -27,16 +31,23 @@ namespace CustomParticleSystem
             ComputeShader = Resources.Load<ComputeShader>("GPUParticleRendererCS");
             SolveMovementKernel = ComputeShader.FindKernel("SolveMovement");
             SolveCollisionsPlanesKernel = ComputeShader.FindKernel("SolveCollisionsPlanes");
+            SolveCollisionsSpheresKernel = ComputeShader.FindKernel("SolveCollisionsSpheres");
+            SolveCollisionsTrianglesKernel = ComputeShader.FindKernel("SolveCollisionsTriangles");
             UpdateInstancesKernel = ComputeShader.FindKernel("UpdateInstances");
             ParticlesBufferKey = Shader.PropertyToID("Particles");
             InstancesBufferKey = Shader.PropertyToID("Instances");
+            CollisionsBufferKey = Shader.PropertyToID("Collisions");
             PlanesBufferKey = Shader.PropertyToID("Planes");
+            SpheresBufferKey = Shader.PropertyToID("Spheres");
+            TrianglesBufferKey = Shader.PropertyToID("Triangles");
             MassKey = Shader.PropertyToID("Mass");
             RadiusKey = Shader.PropertyToID("Radius");
             BouncingKey = Shader.PropertyToID("Bouncing");
             KVerletKey = Shader.PropertyToID("KVerlet");
             DeltaTimeKey = Shader.PropertyToID("DeltaTime");
             NumberPlanesKey = Shader.PropertyToID("NumberPlanes");
+            NumberSpheresKey = Shader.PropertyToID("NumberSpheres");
+            NumberTrianglesKey = Shader.PropertyToID("NumberTriangles");
         }
 
         public override void Render(bool shadows)
@@ -75,6 +86,8 @@ namespace CustomParticleSystem
             InstancesBuffer = new ComputeBuffer(MaximumParticles, InstanceData.Size());
             InstancesBuffer.SetData(new InstanceData[MaximumParticles]);
             Material.SetBuffer("_PerInstanceData", InstancesBuffer);
+
+            CollisionsBuffer = new ComputeBuffer(MaximumParticles, sizeof(int));
         }
 
         public override void SetProperties(float mass, float radius, float bouncing)
@@ -100,9 +113,30 @@ namespace CustomParticleSystem
         public override void SolveCollisions(Obstacle[] obstacles, float deltaTime)
         {
             UpdateObstaclesBuffer(obstacles);
-            ComputeShader.SetBuffer(SolveCollisionsPlanesKernel, ParticlesBufferKey, ParticlesBuffer);
-            ComputeShader.SetBuffer(SolveCollisionsPlanesKernel, PlanesBufferKey, PlanesBuffer);
-            ComputeShader.Dispatch(SolveCollisionsPlanesKernel, MaximumParticles / 64, 1, 1);
+            // Plane
+            if (PlanesGPU.Length > 0)
+            {
+                ComputeShader.SetBuffer(SolveCollisionsPlanesKernel, ParticlesBufferKey, ParticlesBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsPlanesKernel, CollisionsBufferKey, CollisionsBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsPlanesKernel, PlanesBufferKey, PlanesBuffer);
+                ComputeShader.Dispatch(SolveCollisionsPlanesKernel, MaximumParticles / 64, 1, 1);
+            }
+            // Sphere
+            if (SpheresGPU.Length > 0)
+            {
+                ComputeShader.SetBuffer(SolveCollisionsSpheresKernel, ParticlesBufferKey, ParticlesBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsSpheresKernel, CollisionsBufferKey, CollisionsBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsSpheresKernel, SpheresBufferKey, SpheresBuffer);
+                ComputeShader.Dispatch(SolveCollisionsSpheresKernel, MaximumParticles / 64, 1, 1);
+            }
+            // Triangle
+            if (TrianglesGPU.Length > 0)
+            {
+                ComputeShader.SetBuffer(SolveCollisionsTrianglesKernel, ParticlesBufferKey, ParticlesBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsTrianglesKernel, CollisionsBufferKey, CollisionsBuffer);
+                ComputeShader.SetBuffer(SolveCollisionsTrianglesKernel, TrianglesBufferKey, TrianglesBuffer);
+                ComputeShader.Dispatch(SolveCollisionsTrianglesKernel, MaximumParticles / 64, 1, 1);
+            }
         }
 
         private ParticleGPU[] ParticleToGPU = new ParticleGPU[1];
@@ -165,28 +199,56 @@ namespace CustomParticleSystem
         {
             ComputeShader.SetBuffer(UpdateInstancesKernel, ParticlesBufferKey, ParticlesBuffer);
             ComputeShader.SetBuffer(UpdateInstancesKernel, InstancesBufferKey, InstancesBuffer);
+            ComputeShader.SetBuffer(UpdateInstancesKernel, CollisionsBufferKey, CollisionsBuffer);
             ComputeShader.Dispatch(UpdateInstancesKernel, MaximumParticles / 64, 1, 1);
         }
 
         private PlaneGPU[] PlanesGPU;
+        private SphereGPU[] SpheresGPU;
+        private TriangleGPU[] TrianglesGPU;
         private void UpdateObstaclesBuffer(Obstacle[] obstacles)
         {
             if (PlanesBuffer == null)
             {
                 int planeCount = 0;
+                int sphereCount = 0;
+                int triangleCount = 0;
                 foreach (Obstacle o in obstacles)
                 {
-                    if (o is Plane)
-                    {
-                        planeCount += 1;
-                    }
+                    if (o is Plane) planeCount += 1;
+                    else if (o is Sphere) sphereCount += 1;
+                    else if (o is Triangle) triangleCount += 1;
+                    else if (o is Cube) o.GetComponent<MeshRenderer>().enabled = false;
                 }
-                PlanesBuffer = new ComputeBuffer(planeCount, PlaneGPU.Size());
-                PlanesGPU = new PlaneGPU[planeCount];
-                ComputeShader.SetInt(NumberPlanesKey, planeCount);
+                // Planes
+                if (planeCount > 0)
+                {
+                    PlanesBuffer = new ComputeBuffer(planeCount, PlaneGPU.Size());
+                    PlanesGPU = new PlaneGPU[planeCount];
+                    ComputeShader.SetInt(NumberPlanesKey, planeCount);
+                }
+                else PlanesGPU = new PlaneGPU[0];
+                // Spheres
+                if (sphereCount > 0)
+                {
+                    SpheresBuffer = new ComputeBuffer(sphereCount, SphereGPU.Size());
+                    SpheresGPU = new SphereGPU[sphereCount];
+                    ComputeShader.SetInt(NumberSpheresKey, sphereCount);
+                }
+                else SpheresGPU = new SphereGPU[0];
+                // Triangles
+                if (triangleCount > 0)
+                {
+                    TrianglesBuffer = new ComputeBuffer(triangleCount, TriangleGPU.Size());
+                    TrianglesGPU = new TriangleGPU[triangleCount];
+                    ComputeShader.SetInt(NumberTrianglesKey, triangleCount);
+                }
+                else TrianglesGPU = new TriangleGPU[0];
             }
 
             int planeIndex = 0;
+            int sphereIndex = 0;
+            int triangleIndex = 0;
             foreach (Obstacle o in obstacles)
             {
                 if (o is Plane)
@@ -195,8 +257,22 @@ namespace CustomParticleSystem
                     PlanesGPU[planeIndex] = new PlaneGPU(p.Normal, p.D, p.Friction);
                     planeIndex += 1;
                 }
+                else if (o is Sphere)
+                {
+                    Sphere s = o as Sphere;
+                    SpheresGPU[sphereIndex] = new SphereGPU(s.Center, s.Radius, s.Friction);
+                    sphereIndex += 1;
+                }
+                else if (o is Triangle)
+                {
+                    Triangle t = o as Triangle;
+                    TrianglesGPU[triangleIndex] = new TriangleGPU(t.Normal, t.D, t.Friction, t.V1, t.V2, t.V3);
+                    triangleIndex += 1;
+                }
             }
-            PlanesBuffer.SetData(PlanesGPU);
+            if (PlanesGPU.Length > 0) PlanesBuffer.SetData(PlanesGPU);
+            if (SpheresGPU.Length > 0) SpheresBuffer.SetData(SpheresGPU);
+            if (TrianglesGPU.Length > 0) TrianglesBuffer.SetData(TrianglesGPU);
         }
 
         public override void Release()
@@ -216,6 +292,11 @@ namespace CustomParticleSystem
                 InstancesBuffer.Release();
                 InstancesBuffer = null;
             }
+            if (CollisionsBuffer != null)
+            {
+                CollisionsBuffer.Release();
+                CollisionsBuffer = null;
+            }
             if (ArgsBuffer != null)
             {
                 ArgsBuffer.Release();
@@ -225,6 +306,16 @@ namespace CustomParticleSystem
             {
                 PlanesBuffer.Release();
                 PlanesBuffer = null;
+            }
+            if (SpheresBuffer != null)
+            {
+                SpheresBuffer.Release();
+                SpheresBuffer = null;
+            }
+            if (TrianglesBuffer != null)
+            {
+                TrianglesBuffer.Release();
+                TrianglesBuffer = null;
             }
         }
 
@@ -269,6 +360,48 @@ namespace CustomParticleSystem
             public static int Size()
             {
                 return sizeof(float) * (3 + 1 + 1);
+            }
+        }
+
+        private struct SphereGPU
+        {
+            public Vector3 Center;
+            public float Radius;
+            public float Friction;
+
+            public SphereGPU(Vector3 center, float radius, float friction)
+            {
+                Center = center;
+                Radius = radius;
+                Friction = friction;
+            }
+
+            public static int Size()
+            {
+                return sizeof(float) * (3 + 1 + 1);
+            }
+        }
+
+        private struct TriangleGPU
+        {
+            public Vector3 Normal;
+            public float D;
+            public float Friction;
+            public Vector3 V1, V2, V3;
+
+            public TriangleGPU(Vector3 normal, float d, float friction, Vector3 v1, Vector3 v2, Vector3 v3)
+            {
+                Normal = normal;
+                D = d;
+                Friction = friction;
+                V1 = v1;
+                V2 = v2;
+                V3 = v3;
+            }
+
+            public static int Size()
+            {
+                return sizeof(float) * (3 + 1 + 1 + 3 * 3);
             }
         }
     }
