@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using CustomParticleSystem;
+using UnityEditor.SceneManagement;
 
 using ParticleSpawner = CustomParticleSystem.ParticleSpawner;
 using Solver = CustomParticleSystem.Solver;
-using UnityEditor.SceneManagement;
 
 [CustomEditor(typeof(ParticleSpawner))]
 public class ParticleSpawnerEditor : Editor

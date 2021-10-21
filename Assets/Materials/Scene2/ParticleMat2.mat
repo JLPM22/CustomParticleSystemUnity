@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ParticleMat2
-  m_Shader: {fileID: -6465566751694194690, guid: 87323fd69578102469959914441eb2f0, type: 3}
-  m_ShaderKeywords: TRANSPARENCYOVERTIME
+  m_Shader: {fileID: -6465566751694194690, guid: 821cc72812d3673448ea97e459607d6a, type: 3}
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -78,7 +78,7 @@ Material:
     m_Ints: []
     m_Floats:
     - Lifetime: 0
-    - TRANSPARENCYOVERTIME: 1
+    - TRANSPARENCYOVERTIME: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -106,7 +106,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - BaseColor: {r: 0.42352942, g: 0.6509804, b: 0.75686276, a: 1}
+    - BaseColor: {r: 1, g: 0.84705883, b: 0.11764706, a: 1}
     - FinalColor: {r: 1, g: 1, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
