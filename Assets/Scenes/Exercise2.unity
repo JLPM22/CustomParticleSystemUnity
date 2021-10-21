@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8032d6014c466614094e4fb8c4894c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Friction: 0.1
+  Friction: 0
 --- !u!23 &818608408
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -513,7 +513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8032d6014c466614094e4fb8c4894c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Friction: 0.1
+  Friction: 0
 --- !u!23 &1235297735
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -609,7 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8032d6014c466614094e4fb8c4894c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Friction: 0.1
+  Friction: 0
 --- !u!23 &1798463236
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -705,7 +705,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8032d6014c466614094e4fb8c4894c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Friction: 0.1
+  Friction: 0
 --- !u!23 &2108253603
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -853,7 +853,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleBouncing
-      value: 0.6
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleMaterial
@@ -881,7 +881,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.data[0]
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.data[1]
@@ -919,6 +919,10 @@ PrefabInstance:
     - target: {fileID: 6062777215006377639, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062777215006377640, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
+      propertyPath: Friction
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6062777215006377642, guid: cc6de63a396c44c4bad885c67d33213b, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -1043,7 +1047,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6835335757595223843, guid: 5e3ba1f15a7d8784c88ebcbca1f9d3fb, type: 3}
       propertyPath: Friction
-      value: 0.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6835335757595223846, guid: 5e3ba1f15a7d8784c88ebcbca1f9d3fb, type: 3}
       propertyPath: m_Materials.Array.data[0]

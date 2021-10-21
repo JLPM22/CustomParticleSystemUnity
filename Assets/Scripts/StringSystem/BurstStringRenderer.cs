@@ -444,7 +444,7 @@ namespace CustomStringSystem
                 for (int j = 0; j < Spheres.Length; ++j)
                 {
                     BurstSphere sphere = Spheres[j];
-                    float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius) - sphere.Center;
+                    float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius * 0.8f) - sphere.Center;
                     if (dot(dir, dir) < sphere.Radius * sphere.Radius)
                     {
                         p = CollisionSphereParticle(p, sphere);
@@ -470,7 +470,7 @@ namespace CustomStringSystem
             private bool IsCrossingPlane(BurstParticle p, float3 N, float d)
             {
                 float sign = dot(p.Position - N * ParticleRadius, N) + d;
-                sign *= dot(p.PreviousPosition - N * ParticleRadius, N) + d;
+                sign *= dot(p.PreviousPosition + N * ParticleRadius, N) + d;
                 return sign <= 0;
             }
 
