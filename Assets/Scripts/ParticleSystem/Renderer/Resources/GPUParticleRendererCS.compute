@@ -68,7 +68,7 @@ void SolveCollisionsPlanes (uint3 id : SV_DispatchThreadID)
         {
             Plane plane = Planes[i];
             float sign = dot(particle.Position - plane.Normal * Radius, plane.Normal) + plane.D;
-            sign *= dot(particle.PreviousPosition - plane.Normal * Radius, plane.Normal) + plane.D;
+            sign *= dot(particle.PreviousPosition + plane.Normal * Radius, plane.Normal) + plane.D;
             if (sign <= 0.0f)
             {
                 float dotVN = dot(particle.Velocity, plane.Normal);
@@ -114,7 +114,7 @@ void SolveCollisionsSpheres (uint3 id : SV_DispatchThreadID)
         for (int i = 0; i < NumberSpheres; i++)
         {
             Sphere sphere = Spheres[i];
-            float3 dir = (p.Position + normalize(sphere.Center - p.Position) * Radius) - sphere.Center;
+            float3 dir = (p.Position + normalize(sphere.Center - p.Position) * Radius * 0.8f) - sphere.Center;
             if (dot(dir, dir) < sphere.Radius * sphere.Radius)
             {
                 float3 previousPosition = p.PreviousPosition + normalize(sphere.Center - p.PreviousPosition) * Radius;

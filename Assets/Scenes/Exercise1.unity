@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1398,7 +1398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: EmissionRate
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleMesh
@@ -1410,7 +1410,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleRadius
-      value: 0.1
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: ParticleSolver
@@ -1446,7 +1446,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739068, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: MaximumNumberParticles
-      value: 100032
+      value: 500032
       objectReference: {fileID: 0}
     - target: {fileID: 7237260952990739069, guid: ace0f171d51b17d44a9b3a1ad57e0062, type: 3}
       propertyPath: m_Name

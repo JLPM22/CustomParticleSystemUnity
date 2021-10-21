@@ -46,7 +46,7 @@ namespace CustomParticleSystem
         public static bool IsCrossingPlane(Particle p, Vector3 N, float d)
         {
             float sign = Vector3.Dot(p.GetBoundary(p.Position, -N), N) + d;
-            sign *= Vector3.Dot(p.GetBoundary(p.PreviousPosition, -N), N) + d;
+            sign *= Vector3.Dot(p.GetBoundary(p.PreviousPosition, N), N) + d;
             return sign <= 0;
         }
 
