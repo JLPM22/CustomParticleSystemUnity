@@ -13,6 +13,7 @@ namespace CustomStringSystem
         public bool EnableInput;
         public Solver StringSolver;
         [Range(0.95f, 1.0f)] public float KVerlet = 1.0f;
+        public RenderType StringRenderType = RenderType.Particles;
         public int NumberParticles;
         public float DistanceBetweenParticles;
         public Vector3 InitParticleSpawnDir;
@@ -23,13 +24,17 @@ namespace CustomStringSystem
         [Range(0.0f, 1.0f)] public float ParticleBouncing = 0.2f;
         public float ParticleMass = 1.0f;
         public float ParticleRadius = 0.05f;
+        public float HairRadius = 0.05f;
         public Mesh ParticleMesh;
+        public Mesh HairMesh;
         public Material ParticleMaterial;
+        public Material HairMaterial;
         public bool Shadows;
 
         private Obstacle[] Obstacles;
         private float AccumulatedDeltaTime = 0.0f;
         private int LastNumberParticles;
+        private RenderType LastStringRenderType;
         private BurstStringRenderer StringRenderer;
         private bool IsMovingParticle;
         private int MovingParticleIndex;
@@ -44,6 +49,7 @@ namespace CustomStringSystem
         {
             // Init variables
             LastNumberParticles = NumberParticles;
+            LastStringRenderType = StringRenderType;
             // Wait one frame for the Destroy() calls to be done (objects bad inited)
             enabled = false;
             yield return null;
@@ -100,8 +106,8 @@ namespace CustomStringSystem
             }
 
             // Render
-            StringRenderer.UpdateInstances();
-            StringRenderer.Render(Shadows);
+            StringRenderer.UpdateInstances(StringRenderType);
+            StringRenderer.Render(Shadows, StringRenderType);
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
@@ -144,10 +150,11 @@ namespace CustomStringSystem
 
         private bool TestSphereLineIntersection(int indexParticle, Vector3 lineStart, Vector3 lineDir)
         {
+            float radius = DistanceBetweenParticles * 0.5f;
             Vector3 particlePos = StringRenderer.GetParticlePosition(indexParticle);
             float a = Vector3.Dot(lineDir, (lineStart - particlePos));
             float l = Vector3.Magnitude(lineStart - particlePos);
-            float d = a * a - (l * l - ParticleRadius * ParticleRadius);
+            float d = a * a - (l * l - radius * radius);
             return d >= 0.0f;
         }
 
@@ -182,6 +189,13 @@ namespace CustomStringSystem
             EulerOrig,
             EulerSemi,
             Verlet
+        }
+
+        [System.Flags]
+        public enum RenderType
+        {
+            Particles = 1 << 0,
+            Hair = 1 << 1
         }
     }
 }

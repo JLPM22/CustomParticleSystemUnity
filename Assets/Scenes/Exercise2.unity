@@ -846,13 +846,25 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: HairMesh
+      value: 
+      objectReference: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: Elasticity
       value: 333.33337
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: HairRadius
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: EnableInput
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: HairMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 5849e8e8b7354a744b93d1b5ba2f75ef, type: 2}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleMass
       value: 0.1
@@ -867,11 +879,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleRadius
-      value: 0.1
+      value: 0.0252
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: NumberParticles
-      value: 100
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleBouncing
@@ -881,6 +893,10 @@ PrefabInstance:
       propertyPath: ParticleMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 0c391bc66e4f103439fa1e9aa5868bdf, type: 2}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: StringRenderType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: SimulationTimestep
       value: 0.01
@@ -895,15 +911,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: DistanceBetweenParticles
-      value: 0.5
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.size
-      value: 100
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.data[0]
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.data[1]

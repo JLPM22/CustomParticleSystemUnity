@@ -34,6 +34,10 @@ public class StringSpawnerEditor : Editor
         }
         EditorGUILayout.Space(space);
 
+        // String Render Type is a Mask
+        ss.StringRenderType = (StringSpawner.RenderType)EditorGUILayout.EnumFlagsField("String Render Type", ss.StringRenderType);
+        EditorGUILayout.Space(space);
+
         ss.NumberParticles = EditorGUILayout.IntField("Number Particles", ss.NumberParticles);
         if (ss.NumberParticles < 1) ss.NumberParticles = 1;
         ss.DistanceBetweenParticles = EditorGUILayout.FloatField("Distance Between Particles", ss.DistanceBetweenParticles);
@@ -67,10 +71,18 @@ public class StringSpawnerEditor : Editor
 
         ss.ParticleBouncing = EditorGUILayout.Slider("Particle Bouncing", ss.ParticleBouncing, 0.0f, 1.0f);
         ss.ParticleMass = EditorGUILayout.FloatField("Particle Mass", ss.ParticleMass);
+        EditorGUILayout.Space(space);
+
         ss.ParticleRadius = EditorGUILayout.FloatField("Particle Radius", ss.ParticleRadius);
+        if (ss.ParticleRadius < 0.001f) ss.ParticleRadius = 0.001f;
         ss.ParticleMesh = (Mesh)EditorGUILayout.ObjectField("Particle Mesh", ss.ParticleMesh, typeof(Mesh), false);
         ss.ParticleMaterial = (Material)EditorGUILayout.ObjectField("Particle Material", ss.ParticleMaterial, typeof(Material), false);
-        if (ss.ParticleRadius < 0.001f) ss.ParticleRadius = 0.001f;
+        EditorGUILayout.Space(space);
+
+        ss.HairRadius = EditorGUILayout.FloatField("Hair Radius", ss.HairRadius);
+        if (ss.HairRadius < 0.001f) ss.HairRadius = 0.001f;
+        ss.HairMesh = (Mesh)EditorGUILayout.ObjectField("Hair Mesh", ss.HairMesh, typeof(Mesh), false);
+        ss.HairMaterial = (Material)EditorGUILayout.ObjectField("Hair Material", ss.HairMaterial, typeof(Material), false);
         EditorGUILayout.Space(space);
 
         if (GUILayout.Button("Automatic Elasticity and Dumping"))

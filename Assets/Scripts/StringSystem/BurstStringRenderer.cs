@@ -9,6 +9,7 @@ using CustomParticleSystem;
 using static Unity.Mathematics.math;
 using Plane = CustomParticleSystem.Plane;
 using Solver = CustomStringSystem.StringSpawner.Solver;
+using RenderType = CustomStringSystem.StringSpawner.RenderType;
 
 namespace CustomStringSystem
 {
@@ -31,9 +32,12 @@ namespace CustomStringSystem
         private NativeArray<BurstTriangle> Triangles;
 
         private Bounds Bounds = new Bounds(Vector3.zero, 10000 * Vector3.one);
-        private ComputeBuffer InstancesBuffer;
-        private ComputeBuffer ArgsBuffer;
-        private InstanceData[] InstancesData;
+        private ComputeBuffer InstancesParticlesBuffer;
+        private ComputeBuffer InstancesHairBuffer;
+        private ComputeBuffer ArgsParticlesBuffer;
+        private ComputeBuffer ArgsHairBuffer;
+        private InstanceData[] InstancesParticlesData;
+        private InstanceData[] InstancesHairData;
         private int NumberParticles;
         private bool ObstaclesInit;
 
@@ -44,7 +48,6 @@ namespace CustomStringSystem
             if (ParticlesRead.IsCreated) ParticlesRead.Dispose();
             Particles = new NativeArray<BurstParticle>(NumberParticles, Allocator.Persistent);
             ParticlesRead = new NativeArray<BurstParticle>(NumberParticles, Allocator.Persistent);
-            InstancesData = new InstanceData[NumberParticles];
             InitBuffers();
             SpawnParticles(spawnDir.normalized);
         }
@@ -64,41 +67,88 @@ namespace CustomStringSystem
         private void InitBuffers()
         {
             ReleaseBuffers();
+
+            InstancesParticlesData = new InstanceData[NumberParticles];
+            InstancesHairData = new InstanceData[NumberParticles - 1];
+
             uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
             args[0] = (uint)Spawner.ParticleMesh.GetIndexCount(0);
             args[1] = (uint)NumberParticles;
             args[2] = (uint)Spawner.ParticleMesh.GetIndexStart(0);
             args[3] = (uint)Spawner.ParticleMesh.GetBaseVertex(0);
-            ArgsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
-            ArgsBuffer.SetData(args);
+            ArgsParticlesBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+            ArgsParticlesBuffer.SetData(args);
 
-            InstancesBuffer = new ComputeBuffer(NumberParticles, InstanceData.Size());
-            InstancesBuffer.SetData(new InstanceData[NumberParticles]);
-            Spawner.ParticleMaterial.SetBuffer("_PerInstanceData", InstancesBuffer);
+            args[0] = (uint)Spawner.HairMesh.GetIndexCount(0);
+            args[1] = (uint)(NumberParticles - 1);
+            args[2] = (uint)Spawner.HairMesh.GetIndexStart(0);
+            args[3] = (uint)Spawner.HairMesh.GetBaseVertex(0);
+            ArgsHairBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+            ArgsHairBuffer.SetData(args);
+
+            InstancesParticlesBuffer = new ComputeBuffer(NumberParticles, InstanceData.Size());
+            InstancesParticlesBuffer.SetData(new InstanceData[NumberParticles]);
+            Spawner.ParticleMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
+
+            InstancesHairBuffer = new ComputeBuffer(NumberParticles - 1, InstanceData.Size());
+            InstancesHairBuffer.SetData(new InstanceData[NumberParticles - 1]);
+            Spawner.HairMaterial.SetBuffer("_PerInstanceData", InstancesHairBuffer);
         }
 
-        public void UpdateInstances()
+        public void UpdateInstances(RenderType renderType)
         {
-            float radius = Spawner.ParticleRadius;
-            for (int i = 0; i < NumberParticles; i++)
+            if (renderType.HasFlag(RenderType.Particles))
             {
-                InstancesData[i] = new InstanceData(Particles[i].Position,
-                                                    Quaternion.identity,
-                                                    new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f),
-                                                    Spawner.FixedParticles[i]);
+                float radius = Spawner.ParticleRadius;
+                for (int i = 0; i < NumberParticles; i++)
+                {
+                    InstancesParticlesData[i] = new InstanceData(Particles[i].Position,
+                                                        Quaternion.identity,
+                                                        new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f),
+                                                        Spawner.FixedParticles[i]);
+                }
+                InstancesParticlesBuffer.SetData(InstancesParticlesData);
             }
-            InstancesBuffer.SetData(InstancesData);
+            if (renderType.HasFlag(RenderType.Hair))
+            {
+                float radius = Spawner.HairRadius;
+                for (int i = 0; i < NumberParticles - 1; i++)
+                {
+                    Vector3 p1 = Particles[i].Position;
+                    Vector3 p2 = Particles[i + 1].Position;
+                    Vector3 norm = normalize(p2 - p1);
+                    Quaternion rot = Quaternion.FromToRotation(Vector3.up, isnan(norm.x) ? Vector3.up : norm);
+                    InstancesHairData[i] = new InstanceData((p1 + p2) / 2.0f,
+                                                        rot,
+                                                        new Vector3(radius * 2.0f, length(p1 - p2) * 0.5f, radius * 2.0f),
+                                                        Spawner.FixedParticles[i]);
+                }
+                InstancesHairBuffer.SetData(InstancesHairData);
+            }
         }
 
-        public void Render(bool shadows)
+        public void Render(bool shadows, RenderType renderType)
         {
-            Graphics.DrawMeshInstancedIndirect(mesh: Spawner.ParticleMesh,
-                                               submeshIndex: 0,
-                                               material: Spawner.ParticleMaterial,
-                                               bounds: Bounds,
-                                               bufferWithArgs: ArgsBuffer,
-                                               castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
-                                               receiveShadows: shadows);
+            if (renderType.HasFlag(RenderType.Particles))
+            {
+                Graphics.DrawMeshInstancedIndirect(mesh: Spawner.ParticleMesh,
+                                                   submeshIndex: 0,
+                                                   material: Spawner.ParticleMaterial,
+                                                   bounds: Bounds,
+                                                   bufferWithArgs: ArgsParticlesBuffer,
+                                                   castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
+                                                   receiveShadows: shadows);
+            }
+            if (renderType.HasFlag(RenderType.Hair))
+            {
+                Graphics.DrawMeshInstancedIndirect(mesh: Spawner.HairMesh,
+                                                   submeshIndex: 0,
+                                                   material: Spawner.HairMaterial,
+                                                   bounds: Bounds,
+                                                   bufferWithArgs: ArgsHairBuffer,
+                                                   castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
+                                                   receiveShadows: shadows);
+            }
         }
 
         public void SolveForces(float deltaTime)
@@ -251,15 +301,25 @@ namespace CustomStringSystem
 
         private void ReleaseBuffers()
         {
-            if (InstancesBuffer != null)
+            if (InstancesParticlesBuffer != null)
             {
-                InstancesBuffer.Release();
-                InstancesBuffer = null;
+                InstancesParticlesBuffer.Release();
+                InstancesParticlesBuffer = null;
             }
-            if (ArgsBuffer != null)
+            if (InstancesHairBuffer != null)
             {
-                ArgsBuffer.Release();
-                ArgsBuffer = null;
+                InstancesHairBuffer.Release();
+                InstancesHairBuffer = null;
+            }
+            if (ArgsParticlesBuffer != null)
+            {
+                ArgsParticlesBuffer.Release();
+                ArgsParticlesBuffer = null;
+            }
+            if (ArgsHairBuffer != null)
+            {
+                ArgsHairBuffer.Release();
+                ArgsHairBuffer = null;
             }
         }
 
