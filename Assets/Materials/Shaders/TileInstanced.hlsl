@@ -45,4 +45,13 @@ void ColorLifetime_float(float4 ColorA, float4 ColorB, out float4 Out, out float
 	#endif
 }
 
+void ColorFixed_float(float4 ColorA, float4 ColorB, out float4 Out)
+{
+	Out = ColorA;
+	#if UNITY_ANY_INSTANCING_ENABLED
+	float t = _PerInstanceData[unity_InstanceID].lifetime;
+	Out = lerp(ColorA, ColorB, step(1.0f, t));
+	#endif
+}
+
 #endif

@@ -49,6 +49,18 @@ namespace CustomStringSystem
             SpawnParticles(spawnDir.normalized);
         }
 
+        public Vector3 GetParticlePosition(int index)
+        {
+            return Particles[index].Position;
+        }
+
+        public void SetParticlePosition(int index, Vector3 position)
+        {
+            BurstParticle particle = Particles[index];
+            particle.Position = position;
+            Particles[index] = particle;
+        }
+
         private void InitBuffers()
         {
             ReleaseBuffers();
@@ -72,7 +84,8 @@ namespace CustomStringSystem
             {
                 InstancesData[i] = new InstanceData(Particles[i].Position,
                                                     Quaternion.identity,
-                                                    new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f));
+                                                    new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f),
+                                                    Spawner.FixedParticles[i]);
             }
             InstancesBuffer.SetData(InstancesData);
         }
@@ -115,6 +128,9 @@ namespace CustomStringSystem
                 {
                     BurstParticle p = Particles[i];
                     p.Force = float3.zero;
+                    p.Velocity = float3.zero;
+                    p.PreviousPosition = p.Position;
+                    p.PreviousVelocity = float3.zero;
                     Particles[i] = p;
                 }
             }
@@ -546,16 +562,16 @@ namespace CustomStringSystem
             public Matrix4x4 TRSMatrix;
             public float Lifetime;
 
-            public InstanceData(Matrix4x4 tRSMatrix)
+            public InstanceData(Matrix4x4 tRSMatrix, bool fix)
             {
                 TRSMatrix = tRSMatrix;
-                Lifetime = 0.0f;
+                Lifetime = fix ? 1.0f : 0.0f;
             }
 
-            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale)
+            public InstanceData(Vector3 position, Quaternion rotation, Vector3 scale, bool fix)
             {
                 TRSMatrix = Matrix4x4.TRS(position, rotation, scale);
-                Lifetime = 0.0f;
+                Lifetime = fix ? 1.0f : 0.0f;
             }
 
             public static int Size()

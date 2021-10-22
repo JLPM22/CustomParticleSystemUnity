@@ -10,6 +10,7 @@ namespace CustomStringSystem
     {
         [Tooltip("Simulation timestep (independent from the rendering timestep)")]
         public float SimulationTimestep = 1.0f / 60.0f;
+        public bool EnableInput;
         public Solver StringSolver;
         [Range(0.95f, 1.0f)] public float KVerlet = 1.0f;
         public int NumberParticles;
@@ -30,6 +31,14 @@ namespace CustomStringSystem
         private float AccumulatedDeltaTime = 0.0f;
         private int LastNumberParticles;
         private BurstStringRenderer StringRenderer;
+        private bool IsMovingParticle;
+        private int MovingParticleIndex;
+        private Camera MainCamera;
+
+        private void Awake()
+        {
+            MainCamera = Camera.main;
+        }
 
         private IEnumerator Start()
         {
@@ -71,12 +80,75 @@ namespace CustomStringSystem
                 StringRenderer.SolveCollisions(Obstacles, deltaTimeStep);
             }
 
+            // Input
+            if (!EnableInput) return;
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                FixParticle();
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                StartMovingParticle();
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                IsMovingParticle = false;
+            }
+            if (IsMovingParticle)
+            {
+                MoveParticle();
+            }
+
             // Render
             StringRenderer.UpdateInstances();
             StringRenderer.Render(Shadows);
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
+        }
+
+        private void StartMovingParticle()
+        {
+            Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
+            for (int i = 0; i < NumberParticles; i++)
+            {
+                if (TestSphereLineIntersection(i, line.origin, line.direction))
+                {
+                    MovingParticleIndex = i;
+                    IsMovingParticle = true;
+                    break;
+                }
+            }
+        }
+
+        private void MoveParticle()
+        {
+            Vector3 planePos = StringRenderer.GetParticlePosition(MovingParticleIndex);
+            Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
+            Vector3 planeNormal = -line.direction;
+            Vector3 pos = Vector3.ProjectOnPlane(line.origin, planeNormal) + Vector3.Dot(planePos, planeNormal) * planeNormal;
+            StringRenderer.SetParticlePosition(MovingParticleIndex, pos);
+        }
+
+        private void FixParticle()
+        {
+            Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
+            for (int i = 0; i < NumberParticles; i++)
+            {
+                if (TestSphereLineIntersection(i, line.origin, line.direction))
+                {
+                    FixedParticles[i] = !FixedParticles[i];
+                }
+            }
+        }
+
+        private bool TestSphereLineIntersection(int indexParticle, Vector3 lineStart, Vector3 lineDir)
+        {
+            Vector3 particlePos = StringRenderer.GetParticlePosition(indexParticle);
+            float a = Vector3.Dot(lineDir, (lineStart - particlePos));
+            float l = Vector3.Magnitude(lineStart - particlePos);
+            float d = a * a - (l * l - ParticleRadius * ParticleRadius);
+            return d >= 0.0f;
         }
 
         private void UpdateMaximumParticles()

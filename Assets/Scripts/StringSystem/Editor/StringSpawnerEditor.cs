@@ -23,6 +23,7 @@ public class StringSpawnerEditor : Editor
         if (ss.SimulationTimestep <= 0.0f) ss.SimulationTimestep = 0.001f;
         EditorGUILayout.LabelField("FPS: " + (1 / ss.SimulationTimestep).ToString("F0"));
         EditorGUILayout.EndHorizontal();
+        ss.EnableInput = EditorGUILayout.Toggle("Enable Input", ss.EnableInput);
         ss.Shadows = EditorGUILayout.Toggle("Shadows", ss.Shadows);
         EditorGUILayout.Space(space);
 

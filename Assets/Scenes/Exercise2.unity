@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 554268003}
   - component: {fileID: 554268002}
   - component: {fileID: 554268006}
+  - component: {fileID: 554268005}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -207,6 +208,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &554268005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554268001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75c2e427e926e4548bc555db6ccd561e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraSensitivity: 500
+  climbSpeed: 4
+  normalMoveSpeed: 10
+  slowMoveFactor: 0.25
+  fastMoveFactor: 3
 --- !u!114 &554268006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,7 +247,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -832,6 +850,10 @@ PrefabInstance:
       value: 333.33337
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: EnableInput
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleMass
       value: 0.1
       objectReference: {fileID: 0}
@@ -849,7 +871,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: NumberParticles
-      value: 6
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: ParticleBouncing
@@ -877,7 +899,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.size
-      value: 6
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: FixedParticles.Array.data[0]
