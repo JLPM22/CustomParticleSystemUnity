@@ -57,11 +57,29 @@ namespace CustomStringSystem
             return Particles[index].Position;
         }
 
+        public Vector3 GetParticlePreviousPostion(int index)
+        {
+            return Particles[index].PreviousPosition;
+        }
+
         public void SetParticlePosition(int index, Vector3 position)
         {
             BurstParticle particle = Particles[index];
+            BurstParticle particleRead = ParticlesRead[index];
             particle.Position = position;
+            particleRead.Position = position;
             Particles[index] = particle;
+            ParticlesRead[index] = particleRead;
+        }
+
+        public void SetParticlePreviousPosition(int index, Vector3 position)
+        {
+            BurstParticle particle = Particles[index];
+            BurstParticle particleRead = ParticlesRead[index];
+            particle.PreviousPosition = position;
+            particleRead.PreviousPosition = position;
+            Particles[index] = particle;
+            ParticlesRead[index] = particleRead;
         }
 
         private void InitBuffers()

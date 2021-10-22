@@ -38,6 +38,7 @@ namespace CustomStringSystem
         private BurstStringRenderer StringRenderer;
         private bool IsMovingParticle;
         private int MovingParticleIndex;
+        private UnityEngine.Plane MovingPlane;
         private Camera MainCamera;
 
         private void Awake()
@@ -125,6 +126,7 @@ namespace CustomStringSystem
                 {
                     MovingParticleIndex = i;
                     IsMovingParticle = true;
+                    MovingPlane = new UnityEngine.Plane(-line.direction, StringRenderer.GetParticlePosition(MovingParticleIndex));
                     break;
                 }
             }
@@ -132,11 +134,9 @@ namespace CustomStringSystem
 
         private void MoveParticle()
         {
-            Vector3 planePos = StringRenderer.GetParticlePosition(MovingParticleIndex);
             Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
-            Vector3 planeNormal = -line.direction;
-            Vector3 pos = Vector3.ProjectOnPlane(line.origin, planeNormal) + Vector3.Dot(planePos, planeNormal) * planeNormal;
-            StringRenderer.SetParticlePosition(MovingParticleIndex, pos);
+            MovingPlane.Raycast(line, out float distance);
+            StringRenderer.SetParticlePosition(MovingParticleIndex, line.origin + line.direction * distance);
         }
 
         private void FixParticle()
@@ -161,10 +161,30 @@ namespace CustomStringSystem
             return d >= 0.0f;
         }
 
+        public Vector3 GetParticlePosition(int index)
+        {
+            if (StringRenderer != null)
+                return StringRenderer.GetParticlePosition(index);
+            return new Vector3(100000.0f, 100000.0f, 100000.0f);
+        }
+
+        public Vector3 GetParticlePreviousPosition(int index)
+        {
+            if (StringRenderer != null)
+                return StringRenderer.GetParticlePreviousPostion(index);
+            return new Vector3(100000.0f, 100000.0f, 100000.0f);
+        }
+
         public void SetParticlePosition(int index, Vector3 position)
         {
             if (StringRenderer != null)
                 StringRenderer.SetParticlePosition(index, position);
+        }
+
+        public void SetParticlePreviousPosition(int index, Vector3 position)
+        {
+            if (StringRenderer != null)
+                StringRenderer.SetParticlePreviousPosition(index, position);
         }
 
         public void RecomputeElasticityAndDamping()
