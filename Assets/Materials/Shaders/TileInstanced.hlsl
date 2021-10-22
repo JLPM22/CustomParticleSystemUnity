@@ -6,7 +6,15 @@ struct InstanceData {
 	float lifetime;
 };
 
+struct InstanceHairData
+{
+	float4x4 m;
+	float3x3 normalMatrix;
+	float lifetime;
+};
+
 StructuredBuffer<InstanceData> _PerInstanceData;
+StructuredBuffer<InstanceHairData> _PerInstanceHairData;
 float _MaxLifetime;
 
 #if UNITY_ANY_INSTANCING_ENABLED
@@ -35,6 +43,16 @@ void Instancing_float(float3 Position, out float3 Out) {
     #endif
 }
 
+void InstancingHair_float(float3 Position, float3 Normal, out float3 OutPos, out float3 OutNormal) {
+    OutPos = Position;
+	OutNormal = Normal;
+    #if UNITY_ANY_INSTANCING_ENABLED
+    InstanceHairData data = _PerInstanceHairData[unity_InstanceID];
+    OutPos = mul(data.m, float4(Position.x, Position.y, Position.z, 1.0f)).xyz;
+	OutNormal = mul(data.normalMatrix, Normal);
+    #endif
+}
+
 void ColorLifetime_float(float4 ColorA, float4 ColorB, out float4 Out, out float alpha) {
 	Out = ColorA;
 	alpha = 1.0f;
@@ -50,6 +68,15 @@ void ColorFixed_float(float4 ColorA, float4 ColorB, out float4 Out)
 	Out = ColorA;
 	#if UNITY_ANY_INSTANCING_ENABLED
 	float t = _PerInstanceData[unity_InstanceID].lifetime;
+	Out = lerp(ColorA, ColorB, step(1.0f, t));
+	#endif
+}
+
+void ColorFixedHair_float(float4 ColorA, float4 ColorB, out float4 Out)
+{
+	Out = ColorA;
+	#if UNITY_ANY_INSTANCING_ENABLED
+	float t = _PerInstanceHairData[unity_InstanceID].lifetime;
 	Out = lerp(ColorA, ColorB, step(1.0f, t));
 	#endif
 }

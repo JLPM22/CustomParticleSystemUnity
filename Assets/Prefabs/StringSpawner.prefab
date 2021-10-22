@@ -43,18 +43,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5030fc0ddacdd564d8ecdd5ddb944f26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SimulationTimestep: 0.016666668
-  StringSolver: 0
-  KVerlet: 1
-  NumberParticles: 1
-  DistanceBetweenParticles: 0.001
-  InitParticleSpawnDir: {x: 0, y: -1, z: 0}
+  SimulationTimestep: 0.01
+  EnableInput: 1
+  StringSolver: 2
+  KVerlet: 0.99
+  StringRenderType: 1
+  NumberParticles: 20
+  DistanceBetweenParticles: 0.1
+  InitParticleSpawnDir: {x: 1, y: 1, z: 0}
+  FixedParticles: 0100000000000000000000000000000000000000
   Gravity: 9.81
-  Damping: 1
-  Elasticity: 1
-  ParticleBouncing: 0.2
-  ParticleMass: 1
-  ParticleRadius: 0.05
-  ParticleMesh: {fileID: 0}
-  ParticleMaterial: {fileID: 0}
-  Shadows: 0
+  Damping: 3.3333335
+  Elasticity: 333.33337
+  ParticleBouncing: 0.8
+  ParticleMass: 0.1
+  ParticleRadius: 0.0252
+  HairRadius: 0.01
+  ParticleMesh: {fileID: 289301614986012343, guid: 4b41fd829dc9998469fadefc06f33cfa, type: 3}
+  HairMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  ParticleMaterial: {fileID: 2100000, guid: 0c391bc66e4f103439fa1e9aa5868bdf, type: 2}
+  HairMaterial: {fileID: 2100000, guid: 5849e8e8b7354a744b93d1b5ba2f75ef, type: 2}
+  Shadows: 1

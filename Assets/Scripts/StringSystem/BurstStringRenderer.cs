@@ -37,7 +37,7 @@ namespace CustomStringSystem
         private ComputeBuffer ArgsParticlesBuffer;
         private ComputeBuffer ArgsHairBuffer;
         private InstanceData[] InstancesParticlesData;
-        private InstanceData[] InstancesHairData;
+        private InstanceHairData[] InstancesHairData;
         private int NumberParticles;
         private bool ObstaclesInit;
 
@@ -69,7 +69,7 @@ namespace CustomStringSystem
             ReleaseBuffers();
 
             InstancesParticlesData = new InstanceData[NumberParticles];
-            InstancesHairData = new InstanceData[NumberParticles - 1];
+            InstancesHairData = new InstanceHairData[NumberParticles - 1];
 
             uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
             args[0] = (uint)Spawner.ParticleMesh.GetIndexCount(0);
@@ -90,9 +90,9 @@ namespace CustomStringSystem
             InstancesParticlesBuffer.SetData(new InstanceData[NumberParticles]);
             Spawner.ParticleMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
 
-            InstancesHairBuffer = new ComputeBuffer(NumberParticles - 1, InstanceData.Size());
-            InstancesHairBuffer.SetData(new InstanceData[NumberParticles - 1]);
-            Spawner.HairMaterial.SetBuffer("_PerInstanceData", InstancesHairBuffer);
+            InstancesHairBuffer = new ComputeBuffer(NumberParticles - 1, InstanceHairData.Size());
+            InstancesHairBuffer.SetData(new InstanceHairData[NumberParticles - 1]);
+            Spawner.HairMaterial.SetBuffer("_PerInstanceHairData", InstancesHairBuffer);
         }
 
         public void UpdateInstances(RenderType renderType)
@@ -117,11 +117,12 @@ namespace CustomStringSystem
                     Vector3 p1 = Particles[i].Position;
                     Vector3 p2 = Particles[i + 1].Position;
                     Vector3 norm = normalize(p2 - p1);
-                    Quaternion rot = Quaternion.FromToRotation(Vector3.up, isnan(norm.x) ? Vector3.up : norm);
-                    InstancesHairData[i] = new InstanceData((p1 + p2) / 2.0f,
-                                                        rot,
-                                                        new Vector3(radius * 2.0f, length(p1 - p2) * 0.5f, radius * 2.0f),
-                                                        Spawner.FixedParticles[i]);
+                    Vector3 axisRot = Vector3.Cross(Vector3.up, norm);
+                    Quaternion rot = Quaternion.AngleAxis(acos(Vector3.Dot(norm, Vector3.up)) * Mathf.Rad2Deg, axisRot);
+                    InstancesHairData[i] = new InstanceHairData((p1 + p2) / 2.0f,
+                                                            rot,
+                                                            new Vector3(radius * 2.0f, length(p1 - p2) * 0.5f, radius * 2.0f),
+                                                            Spawner.FixedParticles[i]);
                 }
                 InstancesHairBuffer.SetData(InstancesHairData);
             }
@@ -637,6 +638,32 @@ namespace CustomStringSystem
             public static int Size()
             {
                 return sizeof(float) * (4 * 4 + 1);
+            }
+        }
+
+        protected struct InstanceHairData
+        {
+            public Matrix4x4 TRSMatrix;
+            public float3x3 NormalMatrix;
+            public float Lifetime;
+
+            public InstanceHairData(Matrix4x4 tRSMatrix, bool fix)
+            {
+                TRSMatrix = tRSMatrix;
+                NormalMatrix = (float3x3)transpose(inverse((float4x4)tRSMatrix));
+                Lifetime = fix ? 1.0f : 0.0f;
+            }
+
+            public InstanceHairData(Vector3 position, Quaternion rotation, Vector3 scale, bool fix)
+            {
+                TRSMatrix = Matrix4x4.TRS(position, rotation, scale);
+                NormalMatrix = (float3x3)transpose(inverse((float4x4)TRSMatrix));
+                Lifetime = fix ? 1.0f : 0.0f;
+            }
+
+            public static int Size()
+            {
+                return sizeof(float) * (4 * 4 + 3 * 3 + 1);
             }
         }
     }

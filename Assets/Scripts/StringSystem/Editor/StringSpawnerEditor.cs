@@ -87,8 +87,7 @@ public class StringSpawnerEditor : Editor
 
         if (GUILayout.Button("Automatic Elasticity and Dumping"))
         {
-            ss.Elasticity = (ss.ParticleMass / (ss.SimulationTimestep * ss.SimulationTimestep)) * (1.0f / (1.0f + 2.0f));
-            ss.Damping = (ss.ParticleMass / ss.SimulationTimestep) * (1.0f / (1.0f + 2.0f));
+            ss.RecomputeElasticityAndDamping();
         }
 
         // Save changes

@@ -47,11 +47,12 @@ namespace CustomStringSystem
 
         private IEnumerator Start()
         {
+            enabled = false;
+            yield return null;
             // Init variables
             LastNumberParticles = NumberParticles;
             LastStringRenderType = StringRenderType;
             // Wait one frame for the Destroy() calls to be done (objects bad inited)
-            enabled = false;
             yield return null;
             enabled = true;
             // Find obstacles
@@ -87,22 +88,24 @@ namespace CustomStringSystem
             }
 
             // Input
-            if (!EnableInput) return;
-            if (Input.GetKeyDown(KeyCode.F))
+            if (EnableInput)
             {
-                FixParticle();
-            }
-            if (Input.GetMouseButtonDown(0))
-            {
-                StartMovingParticle();
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                IsMovingParticle = false;
-            }
-            if (IsMovingParticle)
-            {
-                MoveParticle();
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    FixParticle();
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    StartMovingParticle();
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    IsMovingParticle = false;
+                }
+                if (IsMovingParticle)
+                {
+                    MoveParticle();
+                }
             }
 
             // Render
@@ -156,6 +159,18 @@ namespace CustomStringSystem
             float l = Vector3.Magnitude(lineStart - particlePos);
             float d = a * a - (l * l - radius * radius);
             return d >= 0.0f;
+        }
+
+        public void SetParticlePosition(int index, Vector3 position)
+        {
+            if (StringRenderer != null)
+                StringRenderer.SetParticlePosition(index, position);
+        }
+
+        public void RecomputeElasticityAndDamping()
+        {
+            Elasticity = (ParticleMass / (SimulationTimestep * SimulationTimestep)) * (1.0f / (1.0f + 2.0f));
+            Damping = (ParticleMass / SimulationTimestep) * (1.0f / (1.0f + 2.0f));
         }
 
         private void UpdateMaximumParticles()
