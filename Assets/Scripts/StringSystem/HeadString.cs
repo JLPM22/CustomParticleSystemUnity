@@ -38,7 +38,7 @@ namespace CustomStringSystem
                 stringSpawner.InitParticleSpawnDir = -transform.forward;
                 stringSpawner.ParticleRadius = ParticleRadius;
                 stringSpawner.HairRadius = HairRadius;
-                stringSpawner.KVerlet = 0.95f;
+                stringSpawner.KVerlet = 0.97f;
                 stringSpawner.StringSolver = StringSpawner.Solver.Verlet;
                 stringSpawner.ParticleBouncing = 0.5f;
                 stringSpawner.ParticleMass = ParticleMass;
@@ -61,6 +61,7 @@ namespace CustomStringSystem
             {
                 StringSpawner stringSpawner = StringSpawners[i];
                 stringSpawner.SetParticlePosition(0, transform.position + Directions[i] * radius);
+                stringSpawner.SetParticlePreviousPosition(0, transform.position + Directions[i] * radius);
             }
         }
 

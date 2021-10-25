@@ -32,6 +32,7 @@ namespace CustomStringSystem
         public bool Shadows;
 
         private Obstacle[] Obstacles;
+        private Wind Wind;
         private float AccumulatedDeltaTime = 0.0f;
         private int LastNumberParticles;
         private RenderType LastStringRenderType;
@@ -59,6 +60,8 @@ namespace CustomStringSystem
             // Find obstacles
             Obstacles = FindObjectsOfType<Obstacle>();
             Array.Sort(Obstacles, (a, b) => a.GetPriority() > b.GetPriority() ? -1 : 1);
+            // Find wind
+            Wind = FindObjectOfType<Wind>();
             // Renderer
             StringRenderer = new BurstStringRenderer(this);
             UpdateMaximumParticles();
@@ -83,7 +86,7 @@ namespace CustomStringSystem
                 float deltaTimeStep = SimulationTimestep;
                 deltaTime -= deltaTimeStep;
 
-                StringRenderer.SolveForces(deltaTimeStep);
+                StringRenderer.SolveForces(deltaTimeStep, Wind == null ? Vector3.zero : Wind.WindForce);
                 StringRenderer.SolveMovement(StringSolver, deltaTimeStep, KVerlet);
                 StringRenderer.SolveCollisions(Obstacles, deltaTimeStep);
             }

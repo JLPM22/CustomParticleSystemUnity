@@ -170,7 +170,7 @@ namespace CustomStringSystem
             }
         }
 
-        public void SolveForces(float deltaTime)
+        public void SolveForces(float deltaTime, Vector3 windForce)
         {
             NativeArray<BurstParticle> particles = Particles;
             Particles = ParticlesRead;
@@ -184,7 +184,8 @@ namespace CustomStringSystem
                 Elasticity = Spawner.Elasticity,
                 Gravity = Spawner.Gravity,
                 StringLength = Spawner.DistanceBetweenParticles,
-                Mass = Spawner.ParticleMass
+                Mass = Spawner.ParticleMass,
+                Wind = windForce
             };
 
             JobHandle handle = job.Schedule(Particles.Length, 64);
@@ -426,6 +427,7 @@ namespace CustomStringSystem
             public float Elasticity;
             public float Damping;
             public float Mass;
+            public float3 Wind;
 
             public void Execute(int index)
             {
@@ -449,7 +451,7 @@ namespace CustomStringSystem
                     float3 p1p0unit = p1p0 / lengthp1p0;
                     force2 = -((Elasticity * (lengthp1p0 - StringLength) + Damping * dot((p1.Velocity - p0.Velocity), p1p0unit)) * p1p0unit);
                 }
-                p1.Force = gravityForce + force1 + force2;
+                p1.Force = gravityForce + force1 + force2 + Wind;
                 Particles[index] = p1;
             }
         }
