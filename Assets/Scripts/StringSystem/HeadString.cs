@@ -27,7 +27,7 @@ namespace CustomStringSystem
             for (int i = 0; i < NumberHair; i++)
             {
                 Vector3 dir = Random.onUnitSphere;
-                while (!(Vector3.Dot(dir, Vector3.up) > 0.0f && Vector3.Dot(dir, Vector3.forward) < 0.0f)) dir = Random.onUnitSphere;
+                while (!(Vector3.Dot(dir, Vector3.up) > 0.0f && Vector3.Dot(dir, Vector3.forward) < 0.5f)) dir = Random.onUnitSphere;
                 Vector3 pos = transform.position + dir * radius;
                 StringSpawner stringSpawner = Instantiate<StringSpawner>(StringSpawnerPrefab, pos, Quaternion.identity, transform);
                 stringSpawner.StringRenderType = RenderType;
@@ -46,7 +46,7 @@ namespace CustomStringSystem
                 stringSpawner.ParticleMaterial = new Material(ParticleMaterial);
                 stringSpawner.HairMaterial = new Material(HairMaterial);
                 stringSpawner.SimulationTimestep = 0.005f;
-                stringSpawner.Shadows = false;
+                stringSpawner.Shadows = true;
                 stringSpawner.RecomputeElasticityAndDamping();
                 StringSpawners.Add(stringSpawner);
                 Directions.Add(dir);

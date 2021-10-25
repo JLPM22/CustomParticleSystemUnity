@@ -7,14 +7,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ParticleMat2
-  m_Shader: {fileID: -6465566751694194690, guid: 821cc72812d3673448ea97e459607d6a, type: 3}
+  m_Name: ObstaclesMat3
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -77,8 +78,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Lifetime: 0
-    - TRANSPARENCYOVERTIME: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -106,17 +105,12 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - BaseColor: {r: 1, g: 0.95575213, b: 0, a: 1}
-    - FinalColor: {r: 1, g: 1, b: 1, a: 0}
-    - FixedColor: {r: 0.9339623, g: 0.066082224, b: 0.066082224, a: 1}
-    - FixedEmission: {r: 8.2694845, g: 1.1312033, b: 1.9032288, a: 1}
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 0.754717, g: 0.64121073, b: 0.5660378, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Emission: {r: 1.6823984, g: 6.9433966, b: 0.69070446, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &8297171201966675114
+--- !u!114 &5806097158913267302
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

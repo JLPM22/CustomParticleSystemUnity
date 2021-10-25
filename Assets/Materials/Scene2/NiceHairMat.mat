@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ParticleMat2
-  m_Shader: {fileID: -6465566751694194690, guid: 821cc72812d3673448ea97e459607d6a, type: 3}
+  m_Name: NiceHairMat
+  m_Shader: {fileID: -6465566751694194690, guid: 1895b583b14bfa448ad165c7d371c083, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - MainTexture:
+        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -106,13 +110,11 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - BaseColor: {r: 1, g: 0.95575213, b: 0, a: 1}
+    - BaseColor: {r: 0.8113208, g: 0.31364673, b: 0.11863652, a: 1}
     - FinalColor: {r: 1, g: 1, b: 1, a: 0}
     - FixedColor: {r: 0.9339623, g: 0.066082224, b: 0.066082224, a: 1}
-    - FixedEmission: {r: 8.2694845, g: 1.1312033, b: 1.9032288, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Emission: {r: 1.6823984, g: 6.9433966, b: 0.69070446, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
