@@ -512,7 +512,7 @@ namespace CustomStringSystem
             }
         }
 
-        [BurstCompile]
+        // [BurstCompile]
         private struct SolveCollisionsBurst : IJobParallelFor
         {
             public NativeArray<BurstParticle> Particles;
@@ -541,10 +541,10 @@ namespace CustomStringSystem
                 for (int j = 0; j < Spheres.Length; ++j)
                 {
                     BurstSphere sphere = Spheres[j];
-                    float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius * 0.8f) - sphere.Center;
+                    float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius) - sphere.Center;
                     if (dot(dir, dir) < sphere.Radius * sphere.Radius)
                     {
-                        p = CollisionSphereParticle(p, sphere);
+                        p = CollisionSphereParticle(p, sphere, index == 17);
                         collision = true;
                     }
                 }
@@ -593,7 +593,7 @@ namespace CustomStringSystem
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private BurstParticle CollisionSphereParticle(BurstParticle p, BurstSphere sphere)
+            private BurstParticle CollisionSphereParticle(BurstParticle p, BurstSphere sphere, bool debug)
             {
                 float3 previousPosition = p.PreviousPosition + normalize(sphere.Center - p.PreviousPosition) * ParticleRadius;
                 // Segment-Sphere intersection
@@ -608,9 +608,9 @@ namespace CustomStringSystem
                     return p;
                 }
                 float sqrtVar = sqrt(num);
-                float s1 = (-beta + sqrtVar) / (2 * alpha);
-                float s2 = (-beta - sqrtVar) / (2 * alpha);
-                float s = s1 >= 0 && s1 <= DeltaTime ? s1 : s2;
+                float s1 = Mathf.Abs((-beta + sqrtVar) / (2 * alpha));
+                float s2 = Mathf.Abs((-beta - sqrtVar) / (2 * alpha));
+                float s = s1 < s2 ? s1 : s2;
                 // Intersection point with the sphere
                 float3 P = previousPosition + s * p.PreviousVelocity;
                 // Define tangent plane on P
