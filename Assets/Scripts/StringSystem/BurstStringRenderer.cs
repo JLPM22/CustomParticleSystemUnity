@@ -512,7 +512,7 @@ namespace CustomStringSystem
             }
         }
 
-        // [BurstCompile]
+        [BurstCompile]
         private struct SolveCollisionsBurst : IJobParallelFor
         {
             public NativeArray<BurstParticle> Particles;
