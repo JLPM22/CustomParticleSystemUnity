@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using CustomStringSystem;
+using CustomSpringSystem;
 
-using Solver = CustomStringSystem.StringSpawner.Solver;
+using Solver = CustomSpringSystem.SpringSpawner.Solver;
 
-[CustomEditor(typeof(StringSpawner))]
-public class StringSpawnerEditor : Editor
+[CustomEditor(typeof(SpringSpawner))]
+public class SpringSpawnerEditor : Editor
 {
     private bool ShowFixedParticles;
 
@@ -16,7 +16,7 @@ public class StringSpawnerEditor : Editor
     {
         const int space = 5;
 
-        StringSpawner ss = (StringSpawner)target;
+        SpringSpawner ss = (SpringSpawner)target;
 
         EditorGUILayout.BeginHorizontal();
         ss.SimulationTimestep = EditorGUILayout.FloatField("Simulation Timestep", ss.SimulationTimestep);
@@ -27,15 +27,15 @@ public class StringSpawnerEditor : Editor
         ss.Shadows = EditorGUILayout.Toggle("Shadows", ss.Shadows);
         EditorGUILayout.Space(space);
 
-        ss.StringSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ss.StringSolver);
-        if (ss.StringSolver == Solver.Verlet)
+        ss.SpringSolver = (Solver)EditorGUILayout.EnumPopup("Particle Solver", ss.SpringSolver);
+        if (ss.SpringSolver == Solver.Verlet)
         {
             ss.KVerlet = EditorGUILayout.Slider("K Verlet", ss.KVerlet, 0.95f, 1.0f);
         }
         EditorGUILayout.Space(space);
 
         // String Render Type is a Mask
-        ss.StringRenderType = (StringSpawner.RenderType)EditorGUILayout.EnumFlagsField("String Render Type", ss.StringRenderType);
+        ss.SpringRenderType = (SpringSpawner.RenderType)EditorGUILayout.EnumFlagsField("String Render Type", ss.SpringRenderType);
         EditorGUILayout.Space(space);
 
         ss.NumberParticles = EditorGUILayout.IntField("Number Particles", ss.NumberParticles);
@@ -44,7 +44,7 @@ public class StringSpawnerEditor : Editor
         if (ss.DistanceBetweenParticles <= 0.0f) ss.DistanceBetweenParticles = 0.001f;
         ss.InitParticleSpawnDir = EditorGUILayout.Vector3Field("Initial Particle Spawn Direction", ss.InitParticleSpawnDir);
         if (ss.InitParticleSpawnDir == Vector3.zero) ss.InitParticleSpawnDir = Vector3.down;
-        if (ss.FixedParticles.Length != ss.NumberParticles) ss.FixedParticles = new bool[ss.NumberParticles];
+        if (ss.FixedParticles == null || (ss.FixedParticles.Length != ss.NumberParticles)) ss.FixedParticles = new bool[ss.NumberParticles];
         ShowFixedParticles = EditorGUILayout.BeginFoldoutHeaderGroup(ShowFixedParticles, "Fixed Particles");
         if (ShowFixedParticles)
         {

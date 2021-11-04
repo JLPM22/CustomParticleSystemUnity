@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CustomStringSystem;
+using CustomSpringSystem;
 
 public class MovableSphere : MonoBehaviour
 {
@@ -11,7 +11,7 @@ public class MovableSphere : MonoBehaviour
     private Camera MainCamera;
     private Vector3 TargetPosition;
 
-    private StringSpawner[] StringSpawners;
+    private SpringSpawner[] StringSpawners;
 
     private void Awake()
     {
@@ -24,7 +24,7 @@ public class MovableSphere : MonoBehaviour
         enabled = false;
         for (int i = 0; i < 5; i++) yield return null;
         enabled = true;
-        StringSpawners = FindObjectsOfType<StringSpawner>();
+        StringSpawners = FindObjectsOfType<SpringSpawner>();
     }
 
     private void LateUpdate()
@@ -47,7 +47,7 @@ public class MovableSphere : MonoBehaviour
 
         float radius = transform.localScale.x / 2.0f;
         Vector3 offset = (transform.position - prev) * 2.0f;
-        foreach (StringSpawner spawner in StringSpawners)
+        foreach (SpringSpawner spawner in StringSpawners)
         {
             for (int i = 0; i < spawner.NumberParticles; i++)
             {

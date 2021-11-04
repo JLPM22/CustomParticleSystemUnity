@@ -4,16 +4,16 @@ using UnityEngine;
 using CustomParticleSystem;
 using System;
 
-namespace CustomStringSystem
+namespace CustomSpringSystem
 {
-    public class StringSpawner : MonoBehaviour
+    public class SpringSpawner : MonoBehaviour
     {
         [Tooltip("Simulation timestep (independent from the rendering timestep)")]
         public float SimulationTimestep = 1.0f / 60.0f;
         public bool EnableInput;
-        public Solver StringSolver;
-        [Range(0.95f, 1.0f)] public float KVerlet = 1.0f;
-        public RenderType StringRenderType = RenderType.Particles;
+        public Solver SpringSolver = Solver.Verlet;
+        [Range(0.95f, 1.0f)] public float KVerlet = 0.99f;
+        public RenderType SpringRenderType = RenderType.Particles;
         public int NumberParticles;
         public float DistanceBetweenParticles;
         public Vector3 InitParticleSpawnDir;
@@ -35,8 +35,8 @@ namespace CustomStringSystem
         private Wind Wind;
         private float AccumulatedDeltaTime = 0.0f;
         private int LastNumberParticles;
-        private RenderType LastStringRenderType;
-        private BurstStringRenderer StringRenderer;
+        private RenderType LastSpringRenderType;
+        private BurstSpringRenderer SpringRenderer;
         private bool IsMovingParticle;
         private int MovingParticleIndex;
         private UnityEngine.Plane MovingPlane;
@@ -53,7 +53,7 @@ namespace CustomStringSystem
             yield return null;
             // Init variables
             LastNumberParticles = NumberParticles;
-            LastStringRenderType = StringRenderType;
+            LastSpringRenderType = SpringRenderType;
             // Wait one frame for the Destroy() calls to be done (objects bad inited)
             yield return null;
             enabled = true;
@@ -63,7 +63,7 @@ namespace CustomStringSystem
             // Find wind
             Wind = FindObjectOfType<Wind>();
             // Renderer
-            StringRenderer = new BurstStringRenderer(this);
+            SpringRenderer = new BurstSpringRenderer(this);
             UpdateMaximumParticles();
             // Application framerate
             Application.targetFrameRate = -1;
@@ -86,9 +86,9 @@ namespace CustomStringSystem
                 float deltaTimeStep = SimulationTimestep;
                 deltaTime -= deltaTimeStep;
 
-                StringRenderer.SolveForces(deltaTimeStep, Wind == null ? Vector3.zero : Wind.WindForce);
-                StringRenderer.SolveMovement(StringSolver, deltaTimeStep, KVerlet);
-                StringRenderer.SolveCollisions(Obstacles, deltaTimeStep);
+                SpringRenderer.SolveForces(deltaTimeStep, Wind == null ? Vector3.zero : Wind.WindForce);
+                SpringRenderer.SolveMovement(SpringSolver, deltaTimeStep, KVerlet);
+                SpringRenderer.SolveCollisions(Obstacles, deltaTimeStep);
             }
 
             // Input
@@ -113,8 +113,8 @@ namespace CustomStringSystem
             }
 
             // Render
-            StringRenderer.UpdateInstances(StringRenderType);
-            StringRenderer.Render(Shadows, StringRenderType);
+            SpringRenderer.UpdateInstances(SpringRenderType);
+            SpringRenderer.Render(Shadows, SpringRenderType);
 
             // Update Variables
             AccumulatedDeltaTime = deltaTime;
@@ -129,7 +129,7 @@ namespace CustomStringSystem
                 {
                     MovingParticleIndex = i;
                     IsMovingParticle = true;
-                    MovingPlane = new UnityEngine.Plane(-line.direction, StringRenderer.GetParticlePosition(MovingParticleIndex));
+                    MovingPlane = new UnityEngine.Plane(-line.direction, SpringRenderer.GetParticlePosition(MovingParticleIndex));
                     break;
                 }
             }
@@ -139,7 +139,7 @@ namespace CustomStringSystem
         {
             Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
             MovingPlane.Raycast(line, out float distance);
-            StringRenderer.SetParticlePosition(MovingParticleIndex, line.origin + line.direction * distance);
+            SpringRenderer.SetParticlePosition(MovingParticleIndex, line.origin + line.direction * distance);
         }
 
         private void FixParticle()
@@ -157,7 +157,7 @@ namespace CustomStringSystem
         private bool TestSphereLineIntersection(int indexParticle, Vector3 lineStart, Vector3 lineDir)
         {
             float radius = DistanceBetweenParticles * 0.5f;
-            Vector3 particlePos = StringRenderer.GetParticlePosition(indexParticle);
+            Vector3 particlePos = SpringRenderer.GetParticlePosition(indexParticle);
             float a = Vector3.Dot(lineDir, (lineStart - particlePos));
             float l = Vector3.Magnitude(lineStart - particlePos);
             float d = a * a - (l * l - radius * radius);
@@ -166,28 +166,28 @@ namespace CustomStringSystem
 
         public Vector3 GetParticlePosition(int index)
         {
-            if (StringRenderer != null)
-                return StringRenderer.GetParticlePosition(index);
+            if (SpringRenderer != null)
+                return SpringRenderer.GetParticlePosition(index);
             return new Vector3(100000.0f, 100000.0f, 100000.0f);
         }
 
         public Vector3 GetParticlePreviousPosition(int index)
         {
-            if (StringRenderer != null)
-                return StringRenderer.GetParticlePreviousPostion(index);
+            if (SpringRenderer != null)
+                return SpringRenderer.GetParticlePreviousPostion(index);
             return new Vector3(100000.0f, 100000.0f, 100000.0f);
         }
 
         public void SetParticlePosition(int index, Vector3 position)
         {
-            if (StringRenderer != null)
-                StringRenderer.SetParticlePosition(index, position);
+            if (SpringRenderer != null)
+                SpringRenderer.SetParticlePosition(index, position);
         }
 
         public void SetParticlePreviousPosition(int index, Vector3 position)
         {
-            if (StringRenderer != null)
-                StringRenderer.SetParticlePreviousPosition(index, position);
+            if (SpringRenderer != null)
+                SpringRenderer.SetParticlePreviousPosition(index, position);
         }
 
         public void RecomputeElasticityAndDamping()
@@ -198,12 +198,12 @@ namespace CustomStringSystem
 
         private void UpdateMaximumParticles()
         {
-            StringRenderer.SetMaximumParticles(NumberParticles, InitParticleSpawnDir);
+            SpringRenderer.SetMaximumParticles(NumberParticles, InitParticleSpawnDir);
         }
 
         private void OnDestroy()
         {
-            if (StringRenderer != null) StringRenderer.Release();
+            if (SpringRenderer != null) SpringRenderer.Release();
         }
 
 #if UNITY_EDITOR

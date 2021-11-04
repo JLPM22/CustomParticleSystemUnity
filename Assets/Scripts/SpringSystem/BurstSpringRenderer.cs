@@ -8,19 +8,19 @@ using CustomParticleSystem;
 
 using static Unity.Mathematics.math;
 using Plane = CustomParticleSystem.Plane;
-using Solver = CustomStringSystem.StringSpawner.Solver;
-using RenderType = CustomStringSystem.StringSpawner.RenderType;
+using Solver = CustomSpringSystem.SpringSpawner.Solver;
+using RenderType = CustomSpringSystem.SpringSpawner.RenderType;
 
-namespace CustomStringSystem
+namespace CustomSpringSystem
 {
     using System.Runtime.CompilerServices;
     using Unity.Mathematics;
 
-    public class BurstStringRenderer
+    public class BurstSpringRenderer
     {
-        private StringSpawner Spawner;
+        private SpringSpawner Spawner;
 
-        public BurstStringRenderer(StringSpawner spawner)
+        public BurstSpringRenderer(SpringSpawner spawner)
         {
             Spawner = spawner;
         }
@@ -183,7 +183,7 @@ namespace CustomStringSystem
                 Damping = Spawner.Damping,
                 Elasticity = Spawner.Elasticity,
                 Gravity = Spawner.Gravity,
-                StringLength = Spawner.DistanceBetweenParticles,
+                SpringLength = Spawner.DistanceBetweenParticles,
                 Mass = Spawner.ParticleMass,
                 Wind = windForce
             };
@@ -422,7 +422,7 @@ namespace CustomStringSystem
         {
             [ReadOnly] public NativeArray<BurstParticle> ParticlesRead;
             public NativeArray<BurstParticle> Particles;
-            public float StringLength;
+            public float SpringLength;
             public float Gravity;
             public float Elasticity;
             public float Damping;
@@ -441,7 +441,7 @@ namespace CustomStringSystem
                     float3 p2p1 = p2.Position - p1.Position;
                     float lengthp2p1 = length(p2p1);
                     float3 p2p1unit = p2p1 / lengthp2p1;
-                    force1 = (Elasticity * (lengthp2p1 - StringLength) + Damping * dot((p2.Velocity - p1.Velocity), p2p1unit)) * p2p1unit;
+                    force1 = (Elasticity * (lengthp2p1 - SpringLength) + Damping * dot((p2.Velocity - p1.Velocity), p2p1unit)) * p2p1unit;
                 }
                 float3 force2 = new float3(0, 0, 0);
                 if (index != 0)
@@ -449,7 +449,7 @@ namespace CustomStringSystem
                     float3 p1p0 = p1.Position - p0.Position;
                     float lengthp1p0 = length(p1p0);
                     float3 p1p0unit = p1p0 / lengthp1p0;
-                    force2 = -((Elasticity * (lengthp1p0 - StringLength) + Damping * dot((p1.Velocity - p0.Velocity), p1p0unit)) * p1p0unit);
+                    force2 = -((Elasticity * (lengthp1p0 - SpringLength) + Damping * dot((p1.Velocity - p0.Velocity), p1p0unit)) * p1p0unit);
                 }
                 p1.Force = gravityForce + force1 + force2 + Wind;
                 Particles[index] = p1;

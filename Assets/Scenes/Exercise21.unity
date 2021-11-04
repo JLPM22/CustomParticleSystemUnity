@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1762952, g: 0.22064696, b: 0.30296856, a: 1}
+  m_IndirectSpecularColor: {r: 0.17629567, g: 0.22064756, b: 0.3029698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -577,7 +577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21471bfc2b6ba2847b44139dfd370273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StringSpawnerPrefab: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+  SpringSpawnerPrefab: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
   NumberHair: 50
   ParticlesPerHair: 15
   DistanceBetweenParticles: 0.1
@@ -1148,7 +1148,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1673563410240171049, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: m_Name
-      value: StringSpawner
+      value: SpringSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 1673563410240171049, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: m_IsActive
@@ -1157,6 +1157,10 @@ PrefabInstance:
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: HairRadius
       value: 0.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: SpringSolver
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: StringSolver
