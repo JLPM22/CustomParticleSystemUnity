@@ -13,6 +13,8 @@ public class CameraController : MonoBehaviour
     private float rotationX = 0.0f;
     private float rotationY = 0.0f;
 
+    private bool canMove = true;
+
     void Start()
     {
         rotationX = transform.localEulerAngles.y;
@@ -42,6 +44,8 @@ public class CameraController : MonoBehaviour
             transform.localRotation *= Quaternion.AngleAxis(rotationY, Vector3.left);
         }
 
+        if (!canMove) return;
+
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;
@@ -61,5 +65,10 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * climbSpeed * Time.deltaTime; }
         if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * climbSpeed * Time.deltaTime; }
+    }
+
+    public void SetMovement(bool isMoving)
+    {
+        canMove = isMoving;
     }
 }

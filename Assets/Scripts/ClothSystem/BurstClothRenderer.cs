@@ -119,8 +119,6 @@ namespace CustomClothSystem
                     triangles[t + 3] = index + 1;
                     triangles[t + 4] = index + Spawner.NumberParticles.x;
                     triangles[t + 5] = index + Spawner.NumberParticles.x + 1;
-
-
                 }
             }
             // UVs
@@ -639,7 +637,7 @@ namespace CustomClothSystem
                     float3 dir = (p.Position + normalize(sphere.Center - p.Position) * ParticleRadius) - sphere.Center;
                     if (dot(dir, dir) < sphere.Radius * sphere.Radius)
                     {
-                        p = CollisionSphereParticle(p, sphere, index == 17);
+                        p = CollisionSphereParticle(p, sphere);
                         collision = true;
                     }
                 }
@@ -688,7 +686,7 @@ namespace CustomClothSystem
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private BurstParticle CollisionSphereParticle(BurstParticle p, BurstSphere sphere, bool debug)
+            private BurstParticle CollisionSphereParticle(BurstParticle p, BurstSphere sphere)
             {
                 float3 previousPosition = p.PreviousPosition + normalize(sphere.Center - p.PreviousPosition) * ParticleRadius;
                 // Segment-Sphere intersection

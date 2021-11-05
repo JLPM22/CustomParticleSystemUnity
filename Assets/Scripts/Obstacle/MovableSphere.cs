@@ -2,21 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CustomSpringSystem;
+using CustomClothSystem;
 
 public class MovableSphere : MonoBehaviour
 {
     public float Speed = 10.0f;
     private bool IsMoving = false;
-    private UnityEngine.Plane MovingPlane;
-    private Camera MainCamera;
     private Vector3 TargetPosition;
 
+    private CameraController MainCamera;
     private SpringSpawner[] StringSpawners;
+    private ClothSpawner[] ClothSpawners;
 
     private void Awake()
     {
-        MainCamera = Camera.main;
         TargetPosition = transform.position;
+        MainCamera = Camera.main.GetComponent<CameraController>();
     }
 
     private IEnumerator Start()
@@ -25,17 +26,20 @@ public class MovableSphere : MonoBehaviour
         for (int i = 0; i < 5; i++) yield return null;
         enabled = true;
         StringSpawners = FindObjectsOfType<SpringSpawner>();
+        ClothSpawners = FindObjectsOfType<ClothSpawner>();
     }
 
     private void LateUpdate()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!IsMoving && Input.GetMouseButtonDown(0))
         {
-            StartMoving();
+            IsMoving = true;
+            MainCamera.SetMovement(false);
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (IsMoving && Input.GetMouseButtonDown(0))
         {
             IsMoving = false;
+            MainCamera.SetMovement(true);
         }
         if (IsMoving)
         {
@@ -59,20 +63,31 @@ public class MovableSphere : MonoBehaviour
                 }
             }
         }
+        foreach (ClothSpawner spawner in ClothSpawners)
+        {
+            for (int y = 0; y < spawner.NumberParticles.y; y++)
+            {
+                for (int x = 0; x < spawner.NumberParticles.x; x++)
+                {
+                    int index = x + y * spawner.NumberParticles.x;
+                    Vector3 particlePos = spawner.GetParticlePosition(index);
+                    if (Vector3.Dot(particlePos - transform.position, particlePos - transform.position) < (radius + spawner.ParticleRadius * 1.25f) * (radius + spawner.ParticleRadius * 1.25f))
+                    {
+                        spawner.SetParticlePosition(index, particlePos + offset);
+                        spawner.SetParticlePreviousPosition(index, spawner.GetParticlePreviousPosition(index) + offset);
+                    }
+                }
+            }
+        }
     }
 
     private void Move()
     {
-        Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
-        MovingPlane.Raycast(line, out float distance);
-        TargetPosition = line.origin + line.direction * distance;
-    }
-
-    private void StartMoving()
-    {
-        Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
-        IsMoving = TestSphereLineIntersection(line.origin, line.direction);
-        MovingPlane = new Plane(-line.direction, transform.position);
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        float up = Input.GetKey(KeyCode.E) ? 1.0f : (Input.GetKey(KeyCode.Q) ? -1.0f : 0.0f);
+        Vector3 movement = new Vector3(horizontal, up, vertical);
+        TargetPosition += movement * Time.deltaTime * Speed * 0.1f;
     }
 
     private bool TestSphereLineIntersection(Vector3 lineStart, Vector3 lineDir)

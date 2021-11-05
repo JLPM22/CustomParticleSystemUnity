@@ -1159,6 +1159,10 @@ PrefabInstance:
       value: 0.025
       objectReference: {fileID: 0}
     - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
+      propertyPath: ParticleMass
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689569995172141068, guid: 55da934c72fa91047b01f457fd2fd20f, type: 3}
       propertyPath: SpringSolver
       value: 2
       objectReference: {fileID: 0}
