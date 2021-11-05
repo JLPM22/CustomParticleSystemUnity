@@ -207,8 +207,9 @@ namespace CustomClothSystem
 
         public void RecomputeElasticityAndDamping()
         {
-            Elasticity = (ParticleMass / (SimulationTimestep * SimulationTimestep)) * (1.0f / (1.0f + 2.0f));
-            Damping = (ParticleMass / SimulationTimestep) * (1.0f / (1.0f + 2.0f));
+            float nSpringsConnected = (Stretch ? 4.0f : 0.0f) + (Shear ? 4.0f : 0.0f) + (Bend ? 4.0f : 0.0f);
+            Elasticity = (ParticleMass / (SimulationTimestep * SimulationTimestep)) * (1.0f / (1.0f + nSpringsConnected));
+            Damping = (ParticleMass / SimulationTimestep) * (1.0f / (1.0f + nSpringsConnected));
         }
 
         private void UpdateMaximumParticles()

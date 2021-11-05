@@ -48,19 +48,25 @@ public class ClothSpawnerEditor : Editor
         ss.InitParticleSpawnDirY = EditorGUILayout.Vector3Field("Initial Particle Spawn Direction Y", ss.InitParticleSpawnDirY);
         if (ss.InitParticleSpawnDirX == Vector3.zero) ss.InitParticleSpawnDirX = Vector3.right;
         if (ss.InitParticleSpawnDirY == Vector3.zero) ss.InitParticleSpawnDirY = Vector3.down;
-        if (ss.FixedParticles == null || (ss.FixedParticles.Length != (ss.NumberParticles.x * ss.NumberParticles.y))) ss.FixedParticles = new bool[ss.NumberParticles.x * ss.NumberParticles.y];
+        if (ss.FixedParticles == null || (ss.FixedParticles.Length != (ss.NumberParticles.x * ss.NumberParticles.y)))
+        {
+            ss.FixedParticles = new bool[ss.NumberParticles.x * ss.NumberParticles.y];
+        }
         ShowFixedParticles = EditorGUILayout.BeginFoldoutHeaderGroup(ShowFixedParticles, "Fixed Particles");
         if (ShowFixedParticles)
         {
-            for (int i = 0; i < ss.FixedParticles.Length + 4; i += 4)
+            for (int i = 0; i < ss.NumberParticles.y; ++i)
             {
-                EditorGUILayout.BeginHorizontal();
-                for (int j = i; j < i + 4 && j < ss.FixedParticles.Length; j++)
+                bool row = true;
+                for (int x = 0; x < ss.NumberParticles.x; ++x)
                 {
-                    EditorGUILayout.LabelField(j.ToString(), GUILayout.Width(20));
-                    ss.FixedParticles[j] = EditorGUILayout.Toggle(ss.FixedParticles[j], GUILayout.Width(20));
+                    row = row && ss.FixedParticles[x + i * ss.NumberParticles.x];
                 }
-                EditorGUILayout.EndHorizontal();
+                row = EditorGUILayout.Toggle("Row " + i.ToString(), row);
+                for (int x = 0; x < ss.NumberParticles.x; ++x)
+                {
+                    ss.FixedParticles[x + i * ss.NumberParticles.x] = row;
+                }
             }
         }
         EditorGUILayout.EndFoldoutHeaderGroup();

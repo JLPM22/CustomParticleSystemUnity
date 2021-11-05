@@ -35,6 +35,7 @@ namespace CustomClothSystem
         private ComputeBuffer InstancesParticlesBuffer;
         private ComputeBuffer ArgsParticlesBuffer;
         private InstanceData[] InstancesParticlesData;
+        private Mesh ClothMesh;
         private int NumberParticles;
         private bool ObstaclesInit;
 
@@ -96,26 +97,71 @@ namespace CustomClothSystem
             InstancesParticlesBuffer = new ComputeBuffer(NumberParticles, InstanceData.Size());
             InstancesParticlesBuffer.SetData(new InstanceData[NumberParticles]);
             Spawner.ParticleMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
+            Spawner.ClothMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
+            Spawner.ClothMaterial.SetInt("_NumberParticlesX", Spawner.NumberParticles.x);
+            Spawner.ClothMaterial.SetInt("_NumberParticlesY", Spawner.NumberParticles.y);
+
+            if (ClothMesh != null) ClothMesh.Clear();
+            ClothMesh = new Mesh();
+            Vector3[] vertices = new Vector3[NumberParticles];
+            // Triangles
+            int nTriangles = (Spawner.NumberParticles.x - 1) * ((NumberParticles - 1) * 2);
+            int[] triangles = new int[nTriangles * 3];
+            for (int y = 0; y < Spawner.NumberParticles.y - 1; y++)
+            {
+                for (int x = 0; x < Spawner.NumberParticles.x - 1; x++)
+                {
+                    int t = (2 * y * (Spawner.NumberParticles.x - 1) + x * 2) * 3;
+                    int index = y * Spawner.NumberParticles.x + x;
+                    triangles[t + 0] = index;
+                    triangles[t + 1] = index + Spawner.NumberParticles.x;
+                    triangles[t + 2] = index + 1;
+                    triangles[t + 3] = index + 1;
+                    triangles[t + 4] = index + Spawner.NumberParticles.x;
+                    triangles[t + 5] = index + Spawner.NumberParticles.x + 1;
+
+
+                }
+            }
+            // UVs
+            Vector2[] uvs = new Vector2[NumberParticles];
+            for (int y = 0; y < Spawner.NumberParticles.y; y++)
+            {
+                for (int x = 0; x < Spawner.NumberParticles.x; x++)
+                {
+                    int index = y * Spawner.NumberParticles.x + x;
+                    uvs[index] = new Vector2(x / (float)(Spawner.NumberParticles.x - 1), y / (float)(Spawner.NumberParticles.y - 1));
+                }
+            }
+            // UV2s
+            Vector2[] uv2s = new Vector2[NumberParticles];
+            for (int y = 0; y < Spawner.NumberParticles.y; y++)
+            {
+                for (int x = 0; x < Spawner.NumberParticles.x; x++)
+                {
+                    uv2s[y * Spawner.NumberParticles.x + x] = new Vector2(x, y);
+                }
+            }
+            // Create Mesh
+            ClothMesh.vertices = vertices;
+            ClothMesh.triangles = triangles;
+            ClothMesh.uv = uvs;
+            ClothMesh.uv2 = uv2s;
+            ClothMesh.bounds = Bounds;
+            ClothMesh.UploadMeshData(true);
         }
 
         public void UpdateInstances(RenderType renderType)
         {
-            if (renderType.HasFlag(RenderType.Particles))
+            float radius = Spawner.ParticleRadius;
+            for (int i = 0; i < NumberParticles; i++)
             {
-                float radius = Spawner.ParticleRadius;
-                for (int i = 0; i < NumberParticles; i++)
-                {
-                    InstancesParticlesData[i] = new InstanceData(Particles[i].Position,
-                                                        Quaternion.identity,
-                                                        new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f),
-                                                        Spawner.FixedParticles[i]);
-                }
-                InstancesParticlesBuffer.SetData(InstancesParticlesData);
+                InstancesParticlesData[i] = new InstanceData(Particles[i].Position,
+                                                    Quaternion.identity,
+                                                    new Vector3(radius * 2.0f, radius * 2.0f, radius * 2.0f),
+                                                    Spawner.FixedParticles[i]);
             }
-            if (renderType.HasFlag(RenderType.Cloth))
-            {
-
-            }
+            InstancesParticlesBuffer.SetData(InstancesParticlesData);
         }
 
         public void Render(bool shadows, RenderType renderType)
@@ -132,7 +178,7 @@ namespace CustomClothSystem
             }
             if (renderType.HasFlag(RenderType.Cloth))
             {
-
+                Graphics.DrawMesh(ClothMesh, Vector3.zero, Quaternion.identity, Spawner.ClothMaterial, 0, null, 0, null, shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off, shadows);
             }
         }
 
