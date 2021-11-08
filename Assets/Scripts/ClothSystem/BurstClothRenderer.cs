@@ -96,10 +96,10 @@ namespace CustomClothSystem
 
             InstancesParticlesBuffer = new ComputeBuffer(NumberParticles, InstanceData.Size());
             InstancesParticlesBuffer.SetData(new InstanceData[NumberParticles]);
-            Spawner.ParticleMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
-            Spawner.ClothMaterial.SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
-            Spawner.ClothMaterial.SetInt("_NumberParticlesX", Spawner.NumberParticles.x);
-            Spawner.ClothMaterial.SetInt("_NumberParticlesY", Spawner.NumberParticles.y);
+            Spawner.GetParticleMat().SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
+            Spawner.GetClothMat().SetBuffer("_PerInstanceData", InstancesParticlesBuffer);
+            Spawner.GetClothMat().SetInt("_NumberParticlesX", Spawner.NumberParticles.x);
+            Spawner.GetClothMat().SetInt("_NumberParticlesY", Spawner.NumberParticles.y);
 
             if (ClothMesh != null) ClothMesh.Clear();
             ClothMesh = new Mesh();
@@ -168,7 +168,7 @@ namespace CustomClothSystem
             {
                 Graphics.DrawMeshInstancedIndirect(mesh: Spawner.ParticleMesh,
                                                    submeshIndex: 0,
-                                                   material: Spawner.ParticleMaterial,
+                                                   material: Spawner.GetParticleMat(),
                                                    bounds: Bounds,
                                                    bufferWithArgs: ArgsParticlesBuffer,
                                                    castShadows: shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off,
@@ -176,7 +176,7 @@ namespace CustomClothSystem
             }
             if (renderType.HasFlag(RenderType.Cloth))
             {
-                Graphics.DrawMesh(ClothMesh, Vector3.zero, Quaternion.identity, Spawner.ClothMaterial, 0, null, 0, null, shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off, shadows);
+                Graphics.DrawMesh(ClothMesh, Vector3.zero, Quaternion.identity, Spawner.GetClothMat(), 0, null, 0, null, shadows ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off, shadows);
             }
         }
 

@@ -121,6 +121,26 @@ namespace CustomClothSystem
             AccumulatedDeltaTime = deltaTime;
         }
 
+        private Material InternalParticleMaterial;
+        public Material GetParticleMat()
+        {
+            if (InternalParticleMaterial == null)
+            {
+                InternalParticleMaterial = new Material(ParticleMaterial);
+            }
+            return InternalParticleMaterial;
+        }
+
+        private Material InternalClothMaterial;
+        public Material GetClothMat()
+        {
+            if (InternalClothMaterial == null)
+            {
+                InternalClothMaterial = new Material(ClothMaterial);
+            }
+            return InternalClothMaterial;
+        }
+
         private void StartMovingParticle()
         {
             Ray line = MainCamera.ScreenPointToRay(Input.mousePosition);
@@ -130,7 +150,7 @@ namespace CustomClothSystem
                 {
                     MovingParticleIndex = i;
                     IsMovingParticle = true;
-                    IsMovingRow = Input.GetKey(KeyCode.R);
+                    IsMovingRow = true; // Input.GetKey(KeyCode.R)
                     MovingPlane = new UnityEngine.Plane(-line.direction, ClothRenderer.GetParticlePosition(MovingParticleIndex));
                     break;
                 }
@@ -220,6 +240,8 @@ namespace CustomClothSystem
         private void OnDestroy()
         {
             if (ClothRenderer != null) ClothRenderer.Release();
+            if (InternalParticleMaterial != null) Destroy(InternalParticleMaterial);
+            if (InternalClothMaterial != null) Destroy(InternalClothMaterial);
         }
 
 #if UNITY_EDITOR

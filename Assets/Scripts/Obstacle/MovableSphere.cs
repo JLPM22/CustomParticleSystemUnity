@@ -33,13 +33,21 @@ public class MovableSphere : MonoBehaviour
     {
         if (!IsMoving && Input.GetMouseButtonDown(0))
         {
-            IsMoving = true;
-            MainCamera.SetMovement(false);
+            Ray ray = MainCamera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            if (TestSphereLineIntersection(ray.origin, ray.direction.normalized))
+            {
+                IsMoving = true;
+                MainCamera.SetMovement(false);
+            }
         }
         else if (IsMoving && Input.GetMouseButtonDown(0))
         {
-            IsMoving = false;
-            MainCamera.SetMovement(true);
+            Ray ray = MainCamera.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            if (TestSphereLineIntersection(ray.origin, ray.direction.normalized))
+            {
+                IsMoving = false;
+                MainCamera.SetMovement(true);
+            }
         }
         if (IsMoving)
         {
